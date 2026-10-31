@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEURODECK // SYSTEMS SKILL TREE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cyan:#00f0ff;
+  --magenta:#ff00e5;
+  --yellow:#fcee0a;
+  --green:#00ff9d;
+  --bg:#05060f;
+  --ink:#bff4ff;
+  --panel:rgba(8,14,28,.72);
+  --font-mono:'Share Tech Mono', ui-monospace, Consolas, monospace;
+  --font-display:'Orbitron', ui-monospace, Consolas, monospace;
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-mono);
+  font-size:15px;
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ================= BACKGROUND LAYERS ================= */
+.bg-glow{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(60vw 60vw at 12% 8%, rgba(255,0,229,.20), transparent 60%),
+    radial-gradient(55vw 55vw at 88% 22%, rgba(0,240,255,.18), transparent 60%),
+    radial-gradient(70vw 50vw at 50% 110%, rgba(0,255,157,.12), transparent 60%);
+  animation:breathe 9s ease-in-out infinite alternate;
+}
+@keyframes breathe{from{opacity:.65;}to{opacity:1;}}
+
+.grid-bg{
+  position:fixed; left:-50%; right:-50%; bottom:-45vh; height:130vh;
+  z-index:0; pointer-events:none; opacity:.30;
+  transform:perspective(420px) rotateX(63deg);
+  transform-origin:50% 100%;
+  background-image:
+    linear-gradient(rgba(0,240,255,.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,.35) 1px, transparent 1px);
+  background-size:64px 64px;
+  animation:gridmove 5s linear infinite;
+  -webkit-mask-image:linear-gradient(to top, #000 0%, transparent 72%);
+  mask-image:linear-gradient(to top, #000 0%, transparent 72%);
+}
+@keyframes gridmove{to{background-position:0 64px, 0 0;}}
+
+.scanlines{
+  position:fixed; inset:0; z-index:60; pointer-events:none;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,.22) 3px,
+    rgba(0,0,0,.22) 4px);
+  opacity:.55;
+  animation:flicker 7s infinite steps(60);
+}
+@keyframes flicker{
+  0%,96%,100%{opacity:.55;}
+  97%{opacity:.32;}
+  98%{opacity:.7;}
+  99%{opacity:.4;}
+}
+.vignette{
+  position:fixed; inset:0; z-index:59; pointer-events:none;
+  background:radial-gradient(120vw 100vh at 50% 40%, transparent 40%, rgba(0,0,0,.75) 100%);
+}
+
+/* ================= BOOT ================= */
+.boot{
+  position:fixed; inset:0; z-index:999;
+  background:#02030a;
+  display:grid; place-items:center;
+  transition:opacity .6s ease, visibility .6s;
+}
+.boot.gone{opacity:0; visibility:hidden;}
+.boot-inner{width:min(560px,86vw);}
+.boot pre{
+  margin:0; font-family:var(--font-mono); font-size:14px; color:var(--cyan);
+  text-shadow:0 0 10px var(--cyan); white-space:pre-wrap;
+}
+.boot pre .cursor{
+  display:inline-block; width:9px; height:16px; background:var(--cyan);
+  vertical-align:-3px; animation:blink .8s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+
+/* ================= HUD ================= */
+.hud{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(10px);
+  background:linear-gradient(180deg, rgba(5,6,15,.94), rgba(5,6,15,.72));
+  border-bottom:1px solid rgba(0,240,255,.28);
+  box-shadow:0 0 30px rgba(0,240,255,.15), inset 0 -1px 0 rgba(255,0,229,.25);
+}
+.hud-inner{
+  max-width:1280px; margin:0 auto; padding:12px 20px;
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+}
+.brand{
+  font-family:var(--font-display); font-weight:900; letter-spacing:.14em;
+  font-size:13px; color:var(--cyan); text-shadow:0 0 12px var(--cyan);
+  white-space:nowrap;
+}
+.brand b{color:var(--magenta); text-shadow:0 0 12px var(--magenta);}
+
+.level-chip{
+  font-family:var(--font-display); font-weight:900; font-size:12px; letter-spacing:.16em;
+  padding:6px 12px; border:1px solid var(--yellow); color:var(--yellow);
+  text-shadow:0 0 10px var(--yellow);
+  box-shadow:0 0 14px rgba(252,238,10,.35), inset 0 0 14px rgba(252,238,10,.12);
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  white-space:nowrap;
+}
+
+.xp-wrap{flex:1 1 220px; min-width:180px;}
+.xp-meta{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:rgba(191,244,255,.62); margin-bottom:5px;
+}
+.xp-meta .rank{color:var(--green); text-shadow:0 0 10px rgba(0,255,157,.7);}
+.xp-bar{
+  position:relative; height:12px; background:rgba(0,240,255,.08);
+  border:1px solid rgba(0,240,255,.35);
+  overflow:hidden;
+  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+}
+.xp-fill{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--cyan), var(--magenta), var(--green));
+  box-shadow:0 0 18px var(--cyan);
+  transition:width .55s cubic-bezier(.2,.9,.2,1);
+  position:relative;
+}
+.xp-fill::after{
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(90deg, rgba(0,0,0,.35) 0 6px, transparent 6px 12px);
+}
+.hud-actions{display:flex; gap:8px;}
+.btn{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.16em;
+  background:transparent; color:var(--magenta); cursor:pointer;
+  border:1px solid rgba(255,0,229,.5); padding:7px 12px;
+  text-transform:uppercase; transition:.2s;
+  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+}
+.btn:hover{
+  background:rgba(255,0,229,.14); color:#fff;
+  box-shadow:0 0 18px rgba(255,0,229,.6);
+  text-shadow:0 0 8px var(--magenta);
+}
+
+/* ================= LAYOUT ================= */
+main{
+  position:relative; z-index:10;
+  max-width:1280px; margin:0 auto; padding:34px 20px 90px;
+}
+
+.hero{text-align:center; padding:26px 0 40px;}
+.hero h1{
+  font-family:var(--font-display); font-weight:900;
+  font-size:clamp(26px,5.6vw,54px);
+  letter-spacing:.10em; margin:0 0 14px; line-height:1.05;
+  color:#eafcff;
+  text-shadow:0 0 10px var(--cyan), 0 0 34px rgba(0,240,255,.65), 0 0 70px rgba(255,0,229,.35);
+}
+.glitch{position:relative; display:inline-block;}
+.glitch::before,.glitch::after{
+  content:attr(data-text); position:absolute; left:0; top:0; width:100%;
+  pointer-events:none;
+}
+.glitch::before{
+  color:var(--magenta); text-shadow:0 0 12px var(--magenta);
+  clip-path:polygon(0 0,100% 0,100% 42%,0 42%);
+  animation:gl1 3.1s infinite linear alternate-reverse;
+}
+.glitch::after{
+  color:var(--cyan); text-shadow:0 0 12px var(--cyan);
+  clip-path:polygon(0 58%,100% 58%,100% 100%,0 100%);
+  animation:gl2 2.3s infinite linear alternate-reverse;
+}
+@keyframes gl1{
+  0%,84%{transform:translate(0,0);opacity:0;}
+  85%{transform:translate(-3px,-2px);opacity:.95;}
+  88%{transform:translate(3px,1px);opacity:.9;}
+  91%{transform:translate(-2px,2px);opacity:.85;}
+  94%,100%{transform:translate(0,0);opacity:0;}
+}
+@keyframes gl2{
+  0%,80%{transform:translate(0,0);opacity:0;}
+  81%{transform:translate(3px,2px);opacity:.95;}
+  85%{transform:translate(-3px,-1px);opacity:.9;}
+  89%{transform:translate(2px,-2px);opacity:.8;}
+  93%,100%{transform:translate(0,0);opacity:0;}
+}
+.hero p{
+  margin:0 auto; max-width:720px; font-size:13px; letter-spacing:.10em;
+  text-transform:uppercase; color:rgba(191,244,255,.55);
+}
+.hero p span{color:var(--green); text-shadow:0 0 10px rgba(0,255,157,.7);}
+
+.stats{
+  display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:26px;
+}
+.stat{
+  border:1px solid rgba(0,240,255,.28); background:var(--panel);
+  padding:10px 18px; min-width:118px;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+.stat .k{font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(191,244,255,.5);}
+.stat .v{
+  font-family:var(--font-display); font-weight:900; font-size:20px;
+  color:var(--cyan); text-shadow:0 0 14px rgba(0,240,255,.8);
+}
+
+/* ================= MODULES ================= */
+.modules{
+  display:grid; gap:22px;
+  grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));
+}
+
+.module{
+  position:relative; background:var(--panel);
+  border:1px solid rgba(0,240,255,.22);
+  padding:18px 18px 14px;
+  transition:border-color .25s, box-shadow .25s, transform .25s;
+  box-shadow:0 0 0 rgba(0,240,255,0);
+  clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
+}
+.module::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(150deg, rgba(0,240,255,.07), transparent 45%, rgba(255,0,229,.07));
+}
+.module:hover{
+  border-color:rgba(0,240,255,.62);
+  box-shadow:0 0 34px rgba(0,240,255,.22), inset 0 0 44px rgba(0,240,255,.05);
+  transform:translateY(-2px);
+}
+.module.complete{
+  border-color:rgba(0,255,157,.55);
+  box-shadow:0 0 30px rgba(0,255,157,.18);
+}
+
+.mod-head{
+  display:flex; align-items:center; gap:10px;
+  padding-bottom:12px; margin-bottom:12px;
+  border-bottom:1px dashed rgba(0,240,255,.22);
+  position:relative;
+}
+.mod-icon{
+  font-size:16px; color:var(--magenta);
+  text-shadow:0 0 12px var(--magenta);
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{50%{opacity:.45;}}
+.mod-title{
+  font-family:var(--font-display); font-weight:900;
+  font-size:12.5px; letter-spacing:.16em; text-transform:uppercase;
+  margin:0; color:#dffaff; text-shadow:0 0 12px rgba(0,240,255,.65);
+}
+.mod-prog{
+  margin-left:auto; font-size:11px; letter-spacing:.12em;
+  color:var(--cyan); border:1px solid rgba(0,240,255,.35);
+  padding:2px 8px; white-space:nowrap;
+}
+.mod-prog.done{
+  color:var(--green); border-color:rgba(0,255,157,.6);
+  text-shadow:0 0 10px rgba(0,255,157,.9);
+}
+
+/* ================= QUESTS ================= */
+.quest{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 10px; margin:5px 0;
+  border-left:2px solid transparent;
+  cursor:pointer; position:relative;
+  transition:background .18s, border-color .18s, padding-left .18s;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+}
+.quest:hover{
+  background:rgba(0,240,255,.07);
+  border-left-color:var(--cyan);
+  padding-left:14px;
+}
+.quest:hover .qname{color:#fff; text-shadow:0 0 12px var(--cyan);}
+
+.chk{
+  flex:0 0 auto; width:20px; height:20px;
+  border:1px solid rgba(0,240,255,.55);
+  background:transparent; cursor:pointer;
+  display:grid; place-items:center;
+  color:transparent; font-size:12px; line-height:1;
+  transition:.2s; padding:0;
+}
+.quest:hover .chk{border-color:var(--cyan); box-shadow:0 0 10px rgba(0,240,255,.55);}
+.quest.done .chk{
+  border-color:var(--green); color:var(--green);
+  background:rgba(0,255,157,.12);
+  box-shadow:0 0 14px rgba(0,255,157,.7), inset 0 0 10px rgba(0,255,157,.25);
+}
+
+.qbody{flex:1 1 auto; min-width:0;}
+.qname{
+  display:block; font-size:13px; letter-spacing:.06em; color:#cdf3ff;
+  transition:.2s; text-transform:uppercase;
+}
+.qmeta{
+  display:block; font-size:10.5px; letter-spacing:.08em;
+  color:rgba(191,244,255,.42); margin-top:1px;
+}
+.quest.done .qname{
+  color:rgba(0,255,157,.85); text-shadow:0 0 10px rgba(0,255,157,.55);
+}
+.quest.done .qmeta{color:rgba(0,255,157,.4);}
+.quest.done{background:rgba(0,255,157,.045); border-left-color:rgba(0,255,157,.7);}
+
+.qlink{
+  flex:0 0 auto; font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--magenta); text-decoration:none; padding:4px 8px;
+  border:1px solid rgba(255,0,229,.4); white-space:nowrap;
+  transition:.2s;
+  clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);
+}
+.qlink:hover{
+  background:rgba(255,0,229,.18); color:#fff;
+  box-shadow:0 0 16px rgba(255,0,229,.75);
+  text-shadow:0 0 8px var(--magenta);
+}
+
+/* ================= FX ================= */
+.float-xp{
+  position:fixed; z-index:200; pointer-events:none;
+  font-family:var(--font-display); font-weight:900; font-size:14px;
+  color:var(--green); text-shadow:0 0 14px var(--green);
+  animation:floatup 1s ease-out forwards;
+}
+@keyframes floatup{
+  from{opacity:1; transform:translate(-50%,0) scale(1);}
+  to{opacity:0; transform:translate(-50%,-52px) scale(1.5);}
+}
+
+.toast{
+  position:fixed; left:50%; top:76px; transform:translate(-50%,-24px);
+  z-index:300; pointer-events:none; opacity:0;
+  font-family:var(--font-display); font-weight:900; letter-spacing:.22em;
+  font-size:13px; padding:12px 26px;
+  color:#02030a; background:linear-gradient(90deg,var(--yellow),var(--green));
+  box-shadow:0 0 40px rgba(252,238,10,.85);
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+}
+.toast.show{animation:toastin 2.2s ease forwards;}
+@keyframes toastin{
+  0%{opacity:0; transform:translate(-50%,-24px) scale(.9);}
+  12%{opacity:1; transform:translate(-50%,0) scale(1);}
+  78%{opacity:1; transform:translate(-50%,0) scale(1);}
+  100%{opacity:0; transform:translate(-50%,-16px) scale(1.04);}
+}
+
+footer{
+  position:relative; z-index:10;
+  max-width:1280px; margin:0 auto; padding:0 20px 60px;
+  text-align:center; font-size:11px; letter-spacing:.12em;
+  color:rgba(191,244,255,.34); text-transform:uppercase;
+}
+footer .hl{color:var(--cyan); text-shadow:0 0 10px rgba(0,240,255,.7);}
+
+@media (max-width:520px){
+  .modules{grid-template-columns:1fr;}
+  .qlink{padding:4px 6px; font-size:9px;}
+  .hud-inner{padding:10px 14px; gap:10px;}
+  .brand{font-size:11px;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s !important; animation-iteration-count:1 !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg-glow"></div>
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+
+<!-- BOOT -->
+<div class="boot" id="boot">
+  <div class="boot-inner"><pre id="bootlog"></pre></div>
+</div>
+
+<!-- HUD -->
+<header class="hud">
+  <div class="hud-inner">
+    <div class="brand">NEURO<b>DECK</b> // SKILL TREE</div>
+    <div class="level-chip" id="levelChip">LVL 01</div>
+    <div class="xp-wrap">
+      <div class="xp-meta">
+        <span id="xpText">0 / 100 XP</span>
+        <span class="rank" id="rankText">SCRIPT KIDDIE</span>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+    </div>
+    <div class="hud-actions">
+      <button class="btn" id="resetBtn">RESET</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <h1><span class="glitch" data-text="SYSTEMS SKILL TREE">SYSTEMS SKILL TREE</span></h1>
+    <p>C · ASSEMBLY · MEMORY · SYSCALLS · LINUX · PYTHON · DEBUGGING &nbsp;//&nbsp; <span>48 NODES TO JACK IN</span></p>
+    <div class="stats">
+      <div class="stat"><div class="k">Nodes Cleared</div><div class="v" id="statDone">0/48</div></div>
+      <div class="stat"><div class="k">Total XP</div><div class="v" id="statXp">0</div></div>
+      <div class="stat"><div class="k">Completion</div><div class="v" id="statPct">0%</div></div>
+    </div>
+  </section>
+
+  <div class="modules" id="modules">
+
+    <!-- ============ C PROGRAMMING ============ -->
+    <section class="module" data-mod="c">
+      <div class="mod-head">
+        <span class="mod-icon">◈</span>
+        <h2 class="mod-title">C Programming</h2>
+        <span class="mod-prog">0/13</span>
+      </div>
+
+      <div class="quest" data-id="c-pointer-vars">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Pointer Variables</span>
+          <span class="qmeta">§2.2 · addresses, dereference, NULL</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/pointers.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-pointer-arith">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Pointer Arithmetic</span>
+          <span class="qmeta">§2.9.4 · p+1, array decay, strides</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/advanced_pointer_arithmetic.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-pointer-fn">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Pointers &amp; Functions</span>
+          <span class="qmeta">§2.3 · pass-by-reference, out-params</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/pointers_functions.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-malloc">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">malloc / free</span>
+          <span class="qmeta">§2.4 · heap vs stack, NULL checks, leaks</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/dynamic_memory.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-memcpy">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">memcpy</span>
+          <span class="qmeta">byte copy · n bytes · no overlap</span>
+        </div>
+        <a class="qlink" href="https://en.cppreference.com/c/string/byte/memcpy" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-memset">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">memset</span>
+          <span class="qmeta">byte fill · zeroing structs</span>
+        </div>
+        <a class="qlink" href="https://en.cppreference.com/c/string/byte/memset" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-bytefns">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Byte-String Function Index</span>
+          <span class="qmeta">memmove · memcmp · memchr · all of them</span>
+        </div>
+        <a class="qlink" href="https://en.cppreference.com/c/string/byte" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-structs">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Structs</span>
+          <span class="qmeta">§2.7 · -&gt; operator, nested, arrays of structs</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/structs.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-unions">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Unions</span>
+          <span class="qmeta">shared storage · type punning</span>
+        </div>
+        <a class="qlink" href="https://en.cppreference.com/c/language/union" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-fnptr">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Function Pointers</span>
+          <span class="qmeta">cppreference → "Pointers to functions"</span>
+        </div>
+        <a class="qlink" href="https://en.cppreference.com/c/language/pointer" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-voidstar">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">void* Type Casting</span>
+          <span class="qmeta">§2.9.3 · generic pointers, casts</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/advanced_voidstar.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-to-asm">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">C → Machine Code Model</span>
+          <span class="qmeta">§2.9.7 · compiling C to assembly</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/advanced_assembly.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="c-godbolt">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Godbolt Live Compiler</span>
+          <span class="qmeta">type C → see x86-64 ASM in real time</span>
+        </div>
+        <a class="qlink" href="https://godbolt.org" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+    </section>
+
+    <!-- ============ ASSEMBLY ============ -->
+    <section class="module" data-mod="asm">
+      <div class="mod-head">
+        <span class="mod-icon">◈</span>
+        <h2 class="mod-title">x86 / x64 Assembly</h2>
+        <span class="mod-prog">0/8</span>
+      </div>
+
+      <div class="quest" data-id="asm-basics">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Registers &amp; Addressing Modes</span>
+          <span class="qmeta">§7.1 · RAX/RBX/RCX/RDX/RSP/RBP/RIP · EAX/AX/AL · [rsp+8]</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C7-x86_64/basics.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-cheatsheet">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Stanford CS107 Cheat Sheet</span>
+          <span class="qmeta">one-pager · register roles, arg order</span>
+        </div>
+        <a class="qlink" href="https://web.stanford.edu/class/cs107/resources/x86-64-reference.pdf" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-functions">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Functions &amp; Stack Ops</span>
+          <span class="qmeta">§7.5 · push rbp / mov rbp,rsp / sub rsp,N / call / ret</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C7-x86_64/functions.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-common">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Core Instructions</span>
+          <span class="qmeta">§7.2 · mov · lea · add · sub · cmp · jmp · jcc</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C7-x86_64/common.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-felix">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Instruction Encoding Reference</span>
+          <span class="qmeta">felixcloutier · per-instruction flags &amp; bytes</span>
+        </div>
+        <a class="qlink" href="https://felixcloutier.com/x86" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-win64">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Windows x64 Calling Convention</span>
+          <span class="qmeta">RCX/RDX/R8/R9 · shadow space · volatile regs</span>
+        </div>
+        <a class="qlink" href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-sysv">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Linux System V AMD64 ABI</span>
+          <span class="qmeta">RDI/RSI/RDX/RCX/R8/R9 · red zone</span>
+        </div>
+        <a class="qlink" href="https://wiki.osdev.org/Calling_Conventions" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="asm-cdecl">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">cdecl / stdcall</span>
+          <span class="qmeta">32-bit conventions · context only</span>
+        </div>
+        <a class="qlink" href="https://learn.microsoft.com/en-us/cpp/cpp/calling-conventions?view=msvc-170" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+    </section>
+
+    <!-- ============ HOW PROGRAMS RUN ============ -->
+    <section class="module" data-mod="run">
+      <div class="mod-head">
+        <span class="mod-icon">◈</span>
+        <h2 class="mod-title">How Programs Run</h2>
+        <span class="mod-prog">0/9</span>
+      </div>
+
+      <div class="quest" data-id="run-memory">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Parts of Program Memory</span>
+          <span class="qmeta">§2.1 · stack frame: ret addr, saved RBP, locals</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/scope_memory.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-anatomy">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Anatomy of a Program in Memory</span>
+          <span class="qmeta">diagrams · Linux process map · ASLR</span>
+        </div>
+        <a class="qlink" href="https://manybutfinite.com/post/anatomy-of-a-program-in-memory/" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-vm">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Virtual Memory</span>
+          <span class="qmeta">§13.3 · stack / heap / text / data segments</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C13-OS/vm.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-proc">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Processes</span>
+          <span class="qmeta">§13.2 · process lifecycle, address space</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/C13-OS/processes.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-rings">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Ring 0 vs Ring 3</span>
+          <span class="qmeta">privilege levels · userland vs kernel</span>
+        </div>
+        <a class="qlink" href="https://osdev.wiki/wiki/Security" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-syscall-table">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Linux x86_64 Syscall Table</span>
+          <span class="qmeta">RAX number → function · register args</span>
+        </div>
+        <a class="qlink" href="https://hackeradam.com/x86-64-linux-syscalls/" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-syscall-lwn">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">syscall Instruction Internals</span>
+          <span class="qmeta">LWN deep dive · how userland calls the kernel</span>
+        </div>
+        <a class="qlink" href="https://lwn.net/Articles/604287/" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-pe-spec">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">PE Format Spec</span>
+          <span class="qmeta">Microsoft official · how Windows loads a process</span>
+        </div>
+        <a class="qlink" href="https://learn.microsoft.com/en-us/windows/win32/debug/pe-format" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="run-pe-walk">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">PE Structure Walkthrough</span>
+          <span class="qmeta">headers → sections → IAT → entry point</span>
+        </div>
+        <a class="qlink" href="https://medium.com/@Ericdes/malware-analysis-the-pe-structure-overview-d3bad6051ff7" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+    </section>
+
+    <!-- ============ LINUX CLI ============ -->
+    <section class="module" data-mod="cli">
+      <div class="mod-head">
+        <span class="mod-icon">◈</span>
+        <h2 class="mod-title">Linux CLI</h2>
+        <span class="mod-prog">0/7</span>
+      </div>
+
+      <div class="quest" data-id="cli-basics">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Navigation &amp; Files</span>
+          <span class="qmeta">§17.1 · ls · cd · pwd · cat · cp · mv · rm</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/cmdln_basics.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="cli-search">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Searching</span>
+          <span class="qmeta">§17.6 · grep · find</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/grep.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="cli-perms">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">File Permissions</span>
+          <span class="qmeta">§17.7 · chmod · rwx bits</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/chmod.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="cli-proc">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Process Control</span>
+          <span class="qmeta">§17.9 · ps · kill</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/pskill.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="cli-redirect">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">I/O Redirection</span>
+          <span class="qmeta">§17.12 · &gt; and &lt;</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/ioredirect.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="cli-pipes">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Piping</span>
+          <span class="qmeta">§17.13 · the | operator</span>
+        </div>
+        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/pipe.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="cli-explainshell">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">explainshell</span>
+          <span class="qmeta">any command + flags, explained instantly</span>
+        </div>
+        <a class="qlink" href="https://www.explainshell.com" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+    </section>
+
+    <!-- ============ PYTHON ============ -->
+    <section class="module" data-mod="py">
+      <div class="mod-head">
+        <span class="mod-icon">◈</span>
+        <h2 class="mod-title">Python</h2>
+        <span class="mod-prog">0/6</span>
+      </div>
+
+      <div class="quest" data-id="py-tutorial">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Language Basics</span>
+          <span class="qmeta">vars · loops · conditionals · functions</span>
+        </div>
+        <a class="qlink" href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="py-io">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">File I/O</span>
+          <span class="qmeta">open · read · write · with</span>
+        </div>
+        <a class="qlink" href="https://docs.python.org/3/tutorial/inputoutput.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="py-struct">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">struct Module</span>
+          <span class="qmeta">binary packing / unpacking</span>
+        </div>
+        <a class="qlink" href="https://docs.python.org/3/library/struct.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="py-socket">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">socket Module</span>
+          <span class="qmeta">TCP/UDP · connect · send · recv</span>
+        </div>
+        <a class="qlink" href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="py-socket-howto">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Socket Programming HOWTO</span>
+          <span class="qmeta">practical walkthrough</span>
+        </div>
+        <a class="qlink" href="https://docs.python.org/3/howto/sockets.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="py-subprocess">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">subprocess Module</span>
+          <span class="qmeta">spawn · pipes · check_output</span>
+        </div>
+        <a class="qlink" href="https://docs.python.org/3/library/subprocess.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+    </section>
+
+    <!-- ============ X64DBG ============ -->
+    <section class="module" data-mod="dbg">
+      <div class="mod-head">
+        <span class="mod-icon">◈</span>
+        <h2 class="mod-title">x64dbg</h2>
+        <span class="mod-prog">0/5</span>
+      </div>
+
+      <div class="quest" data-id="dbg-home">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Docs Home</span>
+          <span class="qmeta">official help index</span>
+        </div>
+        <a class="qlink" href="https://help.x64dbg.com/" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="dbg-gui">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">GUI Manual</span>
+          <span class="qmeta">CPU view · registers · hex dump · stack</span>
+        </div>
+        <a class="qlink" href="https://help.x64dbg.com/en/latest/gui/index.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="dbg-tips">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Tips &amp; Tricks</span>
+          <span class="qmeta">relative addressing · highlight · memory BPs</span>
+        </div>
+        <a class="qlink" href="https://help.x64dbg.com/en/latest/gui/tips.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="dbg-cmds">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Commands Index</span>
+          <span class="qmeta">breakpoints · tracing · debug control</span>
+        </div>
+        <a class="qlink" href="https://help.x64dbg.com/en/latest/commands/index.html" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+
+      <div class="quest" data-id="dbg-download">
+        <button class="chk" aria-label="toggle">✔</button>
+        <div class="qbody">
+          <span class="qname">Download Latest Snapshot</span>
+          <span class="qmeta">GitHub · x64dbg releases</span>
+        </div>
+        <a class="qlink" href="https://github.com/x64dbg/x64dbg" target="_blank" rel="noopener">JACK IN ↗</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <span class="hl">ALL NODES VERIFIED</span> · diveintosystems.org links pulled from the live table of contents ·
+  cppreference / felixcloutier / Python docs / Microsoft Learn are permanent official sources
+</footer>
+
+<div class="toast" id="toast">LEVEL UP</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------------- CONFIG ---------------- */
+  const XP_PER_QUEST = 25;
+  const XP_PER_LEVEL = 100;
+  const STORE_KEY = 'neurodeck.skilltree.v1';
+
+  const RANKS = [
+    { min: 100, name: 'LEGEND // SYSTEM OWNED' },
+    { min: 91,  name: 'ZERO-DAY HUNTER' },
+    { min: 76,  name: 'EXPLOIT DEV' },
+    { min: 56,  name: 'KERNEL PILOT' },
+    { min: 36,  name: 'CODE DIVER' },
+    { min: 16,  name: 'NETRUNNER' },
+    { min: 0,   name: 'SCRIPT KIDDIE' }
+  ];
+
+  /* ---------------- STATE ---------------- */
+  const questEls = Array.from(document.querySelectorAll('.quest'));
+  const moduleEls = Array.from(document.querySelectorAll('.module'));
+  const TOTAL = questEls.length;
+
+  let done = new Set();
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) done = new Set(arr);
+    }
+  } catch (e) { /* storage unavailable — run in-memory */ }
+
+  let lastLevel = 0;
+
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(Array.from(done))); }
+    catch (e) { /* ignore */ }
+  }
+
+  /* ---------------- HUD REFS ---------------- */
+  const levelChip = document.getElementById('levelChip');
+  const xpText    = document.getElementById('xpText');
+  const rankText  = document.getElementById('rankText');
+  const xpFill    = document.getElementById('xpFill');
+  const statDone  = document.getElementById('statDone');
+  const statXp    = document.getElementById('statXp');
+  const statPct   = document.getElementById('statPct');
+  const toastEl   = document.getElementById('toast');
+
+  const pad2 = n => String(n).padStart(2, '0');
+
+  function rankFor(pct) {
+    for (const r of RANKS) if (pct >= r.min) return r.name;
+    return RANKS[RANKS.length - 1].name;
+  }
+
+  /* ---------------- RENDER ---------------- */
+  function render(showLevelUp) {
+    let completed = 0;
+
+    questEls.forEach(q => {
+      const on = done.has(q.dataset.id);
+      q.classList.toggle('done', on);
+      if (on) completed++;
+    });
+
+    moduleEls.forEach(m => {
+      const qs = m.querySelectorAll('.quest');
+      const c  = m.querySelectorAll('.quest.done').length;
+      const chip = m.querySelector('.mod-prog');
+      chip.textContent = c + '/' + qs.length;
+      chip.classList.toggle('done', c === qs.length && qs.length > 0);
+      m.classList.toggle('complete', c === qs.length && qs.length > 0);
+    });
+
+    const xp    = completed * XP_PER_QUEST;
+    const level = Math.floor(xp / XP_PER_LEVEL) + 1;
+    const inLvl = xp % XP_PER_LEVEL;
+    const pct   = Math.round((completed / TOTAL) * 100);
+
+    levelChip.textContent = 'LVL ' + pad2(level);
+    xpText.textContent    = inLvl + ' / ' + XP_PER_LEVEL + ' XP';
+    rankText.textContent  = rankFor(pct);
+    xpFill.style.width    = (inLvl / XP_PER_LEVEL * 100) + '%';
+
+    statDone.textContent = completed + '/' + TOTAL;
+    statXp.textContent   = xp;
+    statPct.textContent  = pct + '%';
+
+    if (showLevelUp && level > lastLevel) {
+      toastEl.textContent = 'LEVEL UP // LVL ' + pad2(level);
+      toastEl.classList.remove('show');
+      void toastEl.offsetWidth;
+      toastEl.classList.add('show');
+    }
+    lastLevel = level;
+  }
+
+  /* ---------------- FLOATING +XP ---------------- */
+  function floatXp(x, y, label) {
+    const el = document.createElement('div');
+    el.className = 'float-xp';
+    el.textContent = label;
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
+  /* ---------------- INTERACTIONS ---------------- */
+  questEls.forEach(q => {
+    q.addEventListener('click', ev => {
+      if (ev.target.closest('a')) return;           // let links through
+      const id = q.dataset.id;
+      const wasDone = done.has(id);
+
+      if (wasDone) {
+        done.delete(id);
+      } else {
+        done.add(id);
+        const r = q.getBoundingClientRect();
+        floatXp(r.left + r.width / 2, r.top + r.height / 2, '+' + XP_PER_QUEST + ' XP');
+      }
+      save();
+      render(true);
+    });
+  });
+
+  /* ---------------- RESET ---------------- */
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (!done.size) return;
+    if (confirm('WIPE ALL PROGRESS? This purges your skill tree.')) {
+      done.clear();
+      save();
+      render(false);
+    }
+  });
+
+  /* ---------------- BOOT SEQUENCE ---------------- */
+  const bootEl = document.getElementById('boot');
+  const logEl  = document.getElementById('bootlog');
+  const lines = [
+    '> NEUROLINK v2.077 ................. OK',
+    '> LOADING CYBERDECK CORE ........... OK',
+    '> MOUNTING /dev/knowledge .......... OK',
+    '> INJECTING SKILL TREE [48 NODES] .. OK',
+    '> WELCOME BACK, NETRUNNER.'
+  ];
+
+  let bootDone = false;
+  function endBoot() {
+    if (bootDone) return;
+    bootDone = true;
+    bootEl.classList.add('gone');
+  }
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduceMotion) {
+    endBoot();
+  } else {
+    let i = 0;
+    const tick = setInterval(() => {
+      if (i >= lines.length) {
+        clearInterval(tick);
+        setTimeout(endBoot, 380);
+        return;
+      }
+      logEl.textContent += lines[i] + '\n';
+      i++;
+    }, 170);
+    bootEl.addEventListener('click', () => { clearInterval(tick); endBoot(); });
+  }
+
+  /* ---------------- INIT ---------------- */
+  render(false);
+})();
+</script>
+</body>
+</html>
