@@ -291,7 +291,6 @@ body::after {
   font-style: italic;
 }
 
-/* WARNING BANNER for mislabeled courses */
 .course-warning {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.68rem;
@@ -360,7 +359,6 @@ body::after {
   outline-offset: 2px;
 }
 
-/* spec grid */
 .spec-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -386,7 +384,6 @@ body::after {
 .spec-branch-title.browser{ color: var(--yellow); }
 .spec-branch-title.kernel { color: var(--magenta); }
 
-/* Specialization checklist */
 .spec-checklist {
   display: flex;
   flex-direction: column;
@@ -478,7 +475,7 @@ body::after {
 <div class="app">
 
   <header class="hdr">
-    <div class="hdr-eyebrow">// NIGHT CITY BOOTCAMP :: VER 2077.11 — REVISED</div>
+    <div class="hdr-eyebrow">// NIGHT CITY BOOTCAMP :: VER 2077.11 — FINAL</div>
     <h1 class="hdr-title">Advanced <span class="accent">Zero-Day</span> Research<br>Engineering</h1>
     <p class="hdr-subtitle">Advanced Software Vulnerability Research &amp; Exploit Development Curriculum</p>
     <div class="hdr-stats">
@@ -489,7 +486,6 @@ body::after {
     </div>
   </header>
 
-  <!-- SPEC SELECTOR -->
   <div id="specSelector" style="margin: 2rem 0 0; background: var(--panel); border: 1px solid var(--border); padding: 1rem 1.5rem;">
     <div style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; color:var(--cyan); margin-bottom:0.75rem;">SELECT SPECIALIZATION PATH — PROGRESS TRACKS ONE BRANCH</div>
     <div style="display:flex; flex-wrap:wrap; gap:0.5rem;" id="specBtns"></div>
@@ -498,7 +494,7 @@ body::after {
   <div class="progress-track">
     <div class="prog-bar-track"><div class="prog-bar-fill" id="progBar"></div></div>
     <div class="prog-layers" id="progLayers"></div>
-    <div class="prog-label">TOPICS COMPLETED: <span id="progText">0 / 0</span></div>
+    <div class="prog-label">CURRICULUM ITEMS COMPLETED: <span id="progText">0 / 0</span></div>
   </div>
 
   <div class="layers" id="layerList"></div>
@@ -649,7 +645,7 @@ const LAYERS = [
         ]
       },
       {
-        name: 'C++ Memory Model',
+        name: 'C++ Memory Management & Object Lifetime',
         desc: 'new/delete, unique_ptr/shared_ptr, object lifetime, dangling references.',
         resources: [
           { label: 'LearnCpp.com: Dynamic Memory Allocation (Ch. 19)', url: 'https://www.learncpp.com/cpp-tutorial/dynamic-memory-allocation-with-new-and-delete/' },
@@ -1013,7 +1009,7 @@ const LAYERS = [
         ]
       },
       {
-        name: 'Mitigations & Bypass Techniques',
+        name: 'Mitigations & Protection Mechanisms',
         desc: 'ASLR, NX/DEP, stack canaries, CFI, RELRO — and how research defeats them.',
         resources: [
           { label: 'OST2 Vulns1002: Vulnerability Analysis — Mitigations module (analysis only, not exploit dev)', url: 'https://ost2.fyi/Vulns1002' },
@@ -1110,11 +1106,11 @@ const LAYERS = [
       {
         cls: 'win',
         title: '🪟 Windows Native',
-        checks: ['Study WinAPI internals', 'Analyze PE imports/exports', 'Use WinDbg for crash triage', 'Study heap spray techniques', 'Analyze a real CVE patch diff', 'Write a vulnerability report'],
+        checks: ['Study WinAPI internals', 'Analyze PE imports/exports', 'Use WinDbg for crash triage', 'Study Windows heap allocation APIs', 'Analyze a real CVE patch diff', 'Write a vulnerability report'],
         resources: [
           { label: 'Microsoft PE Format', url: 'https://learn.microsoft.com/en-us/windows/win32/debug/pe-format' },
           { label: 'WinDbg Documentation', url: 'https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/' },
-          { label: 'Microsoft Docs: Windows Heap Manager internals', url: 'https://learn.microsoft.com/en-us/windows/win32/memory/heap-functions' },
+          { label: 'Microsoft Docs: Windows Heap API Reference (Heap Functions)', url: 'https://learn.microsoft.com/en-us/windows/win32/memory/heap-functions' },
           { label: 'OST2 Vulns1002', url: 'https://ost2.fyi/Vulns1002' },
           { label: 'MITRE CWE', url: 'https://cwe.mitre.org/' },
         ]
@@ -1122,25 +1118,27 @@ const LAYERS = [
       {
         cls: 'browser',
         title: '🌐 Browser / JS Engine',
-        checks: ['Set up Chromium build environment', 'Read V8 internals documentation', 'Analyze a browser CVE diff', 'Write a libFuzzer harness for V8', 'Understand JIT compiler basics', 'Study sandbox escape techniques'],
+        checks: ['Set up Chromium build environment', 'Read V8 internals documentation', 'Analyze a browser CVE diff', 'Write a libFuzzer harness for V8', 'Understand JIT compiler basics', 'Study sandbox architecture and security-boundary analysis'],
         resources: [
           { label: 'V8 Engine Documentation', url: 'https://v8.dev/docs' },
           { label: 'Chromium Security', url: 'https://www.chromium.org/Home/chromium-security/' },
           { label: 'Chromium: Sandbox Architecture documentation', url: 'https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md' },
           { label: 'LLVM libFuzzer', url: 'https://llvm.org/docs/LibFuzzer.html' },
+          { label: 'How to make a libFuzzer fuzzer in V8 (official repo guide)', url: 'https://chromium.googlesource.com/v8/v8/+/refs/heads/lkgr/test/fuzzer/README.md' },
           { label: 'OST2 Vulns1002', url: 'https://ost2.fyi/Vulns1002' },
         ]
       },
       {
         cls: 'kernel',
         title: '⚡ Linux Kernel',
-        checks: ['Set up kernel debugging with QEMU+GDB', 'Write a basic kernel module', 'Study slab/slub allocator', 'Analyze a kernel CVE commit', 'Write a syzkaller fuzzing harness', 'Study privilege escalation primitives'],
+        checks: ['Set up kernel debugging with QEMU+GDB', 'Write a basic kernel module', 'Study slab/slub allocator', 'Analyze a kernel CVE commit', 'Write or extend syzkaller syscall descriptions', 'Study privilege escalation primitives'],
         resources: [
           { label: 'Linux Kernel Documentation', url: 'https://www.kernel.org/doc/html/latest/' },
           { label: 'Linux MM Documentation', url: 'https://www.kernel.org/doc/html/latest/admin-guide/mm/index.html' },
           { label: 'syzkaller: Official Linux Setup Documentation (GitHub)', url: 'https://github.com/google/syzkaller/blob/master/docs/linux/setup.md' },
+          { label: 'syzkaller: Syscall Description Syntax (GitHub)', url: 'https://github.com/google/syzkaller/blob/master/docs/syscall_descriptions_syntax.md' },
           { label: 'QEMU: User Documentation (VM setup for kernel debugging)', url: 'https://www.qemu.org/docs/master/' },
-          { label: 'Linux Kernel: Writing a Simple Kernel Module', url: 'https://www.kernel.org/doc/html/latest/driver-api/basics.html' },
+          { label: 'Linux Kernel: Building External Modules (official docs)', url: 'https://www.kernel.org/doc/html/latest/kbuild/modules.html' },
           { label: 'OST2 Arch2001: OS Internals', url: 'https://ost2.fyi/Arch2001' },
           { label: 'OST2 Fuzz1001: Fuzzing', url: 'https://ost2.fyi/Fuzz1001' },
           { label: 'GDB Documentation', url: 'https://sourceware.org/gdb/documentation/' },
@@ -1155,8 +1153,8 @@ const LAYERS = [
 // ============================================================
 let layerOpen = new Array(LAYERS.length).fill(false);
 let topicsDone = {};
-let specDone = {};  // key: "li-branchIdx-checkIdx"
-let selectedSpec = 0; // which specialization branch index to track (0–3)
+let specDone = {};
+let selectedSpec = 0;
 
 try {
   const saved = JSON.parse(localStorage.getItem('nc-curriculum-state-v2') || '{}');
@@ -1187,15 +1185,16 @@ function buildPage() {
     const totalTopics = layer.topics.length;
     const doneTopic = layer.topics.filter((_, ti) => topicsDone[`${li}-${ti}`]).length;
 
-    // For spec layer, count spec checks
+    // For spec layer, count ONLY the selected branch
     let specTotal = 0, specDoneCount = 0;
     if (layer.specializations && layer.branches) {
-      layer.branches.forEach((b, bi) => {
-        (b.checks || []).forEach((_, ci) => {
+      const sb = layer.branches[selectedSpec];
+      if (sb) {
+        (sb.checks || []).forEach((_, ci) => {
           specTotal++;
-          if (specDone[`${li}-${bi}-${ci}`]) specDoneCount++;
+          if (specDone[`${li}-${selectedSpec}-${ci}`]) specDoneCount++;
         });
-      });
+      }
     }
 
     const allDone = totalTopics > 0
@@ -1336,7 +1335,7 @@ function buildSpecSelector() {
       selectedSpec = bi;
       saveState();
       buildSpecSelector();
-      updateProgress();
+      buildPage();
     });
     container.appendChild(btn);
   });
@@ -1348,7 +1347,7 @@ function updateProgress() {
 
   LAYERS.forEach((layer, li) => {
     if (layer.specializations && layer.branches) {
-      // Only count the selected branch
+      // Track only the selected branch
       const b = layer.branches[selectedSpec];
       if (b) {
         (b.checks || []).forEach((_, ci) => {
