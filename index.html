@@ -1,1115 +1,1406 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NEURODECK // SYSTEMS SKILL TREE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Night City Vuln Research</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;600;700&display=swap">
+
 <style>
-:root{
-  --cyan:#00f0ff;
-  --magenta:#ff00e5;
-  --yellow:#fcee0a;
-  --green:#00ff9d;
-  --bg:#05060f;
-  --ink:#bff4ff;
-  --panel:rgba(8,14,28,.72);
-  --font-mono:'Share Tech Mono', ui-monospace, Consolas, monospace;
-  --font-display:'Orbitron', ui-monospace, Consolas, monospace;
+:root {
+  --bg:          #050810;
+  --bg2:         #0a0f1e;
+  --bg3:         #0d1428;
+  --panel:       #0b1120;
+  --panel2:      #111b30;
+  --border:      rgba(0,255,255,0.18);
+  --border-hot:  rgba(0,255,255,0.55);
+  --fg:          #c8d8f0;
+  --fg-dim:      #6a85a8;
+  --fg-bright:   #e8f4ff;
+  --cyan:        #00f5ff;
+  --cyan-dim:    rgba(0,245,255,0.15);
+  --magenta:     #ff00aa;
+  --magenta-dim: rgba(255,0,170,0.15);
+  --yellow:      #f7e800;
+  --yellow-dim:  rgba(247,232,0,0.12);
+  --green:       #00ff88;
+  --green-dim:   rgba(0,255,136,0.12);
+  --orange:      #ff6b1a;
+  --purple:      #9b30ff;
+  --red:         #ff2d55;
+  --glow-cyan:   0 0 8px rgba(0,245,255,0.6), 0 0 20px rgba(0,245,255,0.3);
+  --glow-mag:    0 0 8px rgba(255,0,170,0.6), 0 0 20px rgba(255,0,170,0.3);
+  --glow-grn:    0 0 8px rgba(0,255,136,0.6), 0 0 20px rgba(0,255,136,0.3);
+  --glow-yel:    0 0 8px rgba(247,232,0,0.6), 0 0 20px rgba(247,232,0,0.3);
+  color-scheme: dark;
 }
 
-*{box-sizing:border-box;}
-html,body{height:100%;}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:var(--font-mono);
-  font-size:15px;
-  line-height:1.5;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-/* ================= BACKGROUND LAYERS ================= */
-.bg-glow{
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  background:
-    radial-gradient(60vw 60vw at 12% 8%, rgba(255,0,229,.20), transparent 60%),
-    radial-gradient(55vw 55vw at 88% 22%, rgba(0,240,255,.18), transparent 60%),
-    radial-gradient(70vw 50vw at 50% 110%, rgba(0,255,157,.12), transparent 60%);
-  animation:breathe 9s ease-in-out infinite alternate;
-}
-@keyframes breathe{from{opacity:.65;}to{opacity:1;}}
-
-.grid-bg{
-  position:fixed; left:-50%; right:-50%; bottom:-45vh; height:130vh;
-  z-index:0; pointer-events:none; opacity:.30;
-  transform:perspective(420px) rotateX(63deg);
-  transform-origin:50% 100%;
-  background-image:
-    linear-gradient(rgba(0,240,255,.55) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,240,255,.35) 1px, transparent 1px);
-  background-size:64px 64px;
-  animation:gridmove 5s linear infinite;
-  -webkit-mask-image:linear-gradient(to top, #000 0%, transparent 72%);
-  mask-image:linear-gradient(to top, #000 0%, transparent 72%);
-}
-@keyframes gridmove{to{background-position:0 64px, 0 0;}}
-
-.scanlines{
-  position:fixed; inset:0; z-index:60; pointer-events:none;
-  background:repeating-linear-gradient(
-    to bottom,
-    rgba(0,0,0,0) 0px,
-    rgba(0,0,0,0) 2px,
-    rgba(0,0,0,.22) 3px,
-    rgba(0,0,0,.22) 4px);
-  opacity:.55;
-  animation:flicker 7s infinite steps(60);
-}
-@keyframes flicker{
-  0%,96%,100%{opacity:.55;}
-  97%{opacity:.32;}
-  98%{opacity:.7;}
-  99%{opacity:.4;}
-}
-.vignette{
-  position:fixed; inset:0; z-index:59; pointer-events:none;
-  background:radial-gradient(120vw 100vh at 50% 40%, transparent 40%, rgba(0,0,0,.75) 100%);
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
 }
 
-/* ================= BOOT ================= */
-.boot{
-  position:fixed; inset:0; z-index:999;
-  background:#02030a;
-  display:grid; place-items:center;
-  transition:opacity .6s ease, visibility .6s;
-}
-.boot.gone{opacity:0; visibility:hidden;}
-.boot-inner{width:min(560px,86vw);}
-.boot pre{
-  margin:0; font-family:var(--font-mono); font-size:14px; color:var(--cyan);
-  text-shadow:0 0 10px var(--cyan); white-space:pre-wrap;
-}
-.boot pre .cursor{
-  display:inline-block; width:9px; height:16px; background:var(--cyan);
-  vertical-align:-3px; animation:blink .8s steps(1) infinite;
-}
-@keyframes blink{50%{opacity:0;}}
-
-/* ================= HUD ================= */
-.hud{
-  position:sticky; top:0; z-index:50;
-  backdrop-filter:blur(10px);
-  background:linear-gradient(180deg, rgba(5,6,15,.94), rgba(5,6,15,.72));
-  border-bottom:1px solid rgba(0,240,255,.28);
-  box-shadow:0 0 30px rgba(0,240,255,.15), inset 0 -1px 0 rgba(255,0,229,.25);
-}
-.hud-inner{
-  max-width:1280px; margin:0 auto; padding:12px 20px;
-  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
-}
-.brand{
-  font-family:var(--font-display); font-weight:900; letter-spacing:.14em;
-  font-size:13px; color:var(--cyan); text-shadow:0 0 12px var(--cyan);
-  white-space:nowrap;
-}
-.brand b{color:var(--magenta); text-shadow:0 0 12px var(--magenta);}
-
-.level-chip{
-  font-family:var(--font-display); font-weight:900; font-size:12px; letter-spacing:.16em;
-  padding:6px 12px; border:1px solid var(--yellow); color:var(--yellow);
-  text-shadow:0 0 10px var(--yellow);
-  box-shadow:0 0 14px rgba(252,238,10,.35), inset 0 0 14px rgba(252,238,10,.12);
-  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
-  white-space:nowrap;
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2rem 4rem;
 }
 
-.xp-wrap{flex:1 1 220px; min-width:180px;}
-.xp-meta{
-  display:flex; justify-content:space-between; align-items:baseline;
-  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-  color:rgba(191,244,255,.62); margin-bottom:5px;
+.hdr {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  position: relative;
 }
-.xp-meta .rank{color:var(--green); text-shadow:0 0 10px rgba(0,255,157,.7);}
-.xp-bar{
-  position:relative; height:12px; background:rgba(0,240,255,.08);
-  border:1px solid rgba(0,240,255,.35);
-  overflow:hidden;
-  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+.hdr::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
 }
-.xp-fill{
-  height:100%; width:0%;
-  background:linear-gradient(90deg, var(--cyan), var(--magenta), var(--green));
-  box-shadow:0 0 18px var(--cyan);
-  transition:width .55s cubic-bezier(.2,.9,.2,1);
-  position:relative;
+.hdr-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
 }
-.xp-fill::after{
-  content:''; position:absolute; inset:0;
-  background:repeating-linear-gradient(90deg, rgba(0,0,0,.35) 0 6px, transparent 6px 12px);
+.hdr-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--fg-bright);
+  text-shadow: var(--glow-cyan);
+  text-wrap: balance;
 }
-.hud-actions{display:flex; gap:8px;}
-.btn{
-  font-family:var(--font-mono); font-size:11px; letter-spacing:.16em;
-  background:transparent; color:var(--magenta); cursor:pointer;
-  border:1px solid rgba(255,0,229,.5); padding:7px 12px;
-  text-transform:uppercase; transition:.2s;
-  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+.hdr-title span.accent { color: var(--cyan); }
+.hdr-subtitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  color: var(--fg-dim);
+  margin-top: 0.75rem;
+  letter-spacing: 0.08em;
 }
-.btn:hover{
-  background:rgba(255,0,229,.14); color:#fff;
-  box-shadow:0 0 18px rgba(255,0,229,.6);
-  text-shadow:0 0 8px var(--magenta);
+.hdr-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--cyan);
+  border: 1px solid var(--border);
+  background: var(--cyan-dim);
+  padding: 0.3rem 0.8rem;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.stat-chip .val { color: var(--yellow); font-weight: 700; }
+
+.progress-track {
+  margin: 2.5rem 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.progress-track::before {
+  content: 'MISSION PROGRESS';
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.prog-bar-track {
+  height: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.prog-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 0 10px rgba(0,245,255,0.5);
+}
+.prog-layers {
+  display: flex;
+  margin-top: 0.5rem;
+  gap: 2px;
+}
+.prog-layer-tick {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.prog-layer-tick.done { background: var(--cyan); }
+.prog-layer-tick:hover { background: var(--magenta); }
+.prog-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fg-dim);
+  margin-top: 0.4rem;
+}
+.prog-label span { color: var(--green); }
+
+.layers { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
+
+.layer-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+.layer-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--layer-color, var(--cyan));
+  box-shadow: 0 0 10px var(--layer-color, var(--cyan));
+}
+.layer-card:hover { border-color: var(--border-hot); }
+
+.layer-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 0;
+  border-color: transparent var(--layer-color, var(--cyan)) transparent transparent;
+  opacity: 0.6;
 }
 
-/* ================= LAYOUT ================= */
-main{
-  position:relative; z-index:10;
-  max-width:1280px; margin:0 auto; padding:34px 20px 90px;
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  background: var(--panel2);
+  position: relative;
+}
+.layer-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--layer-color, var(--cyan));
+  text-shadow: 0 0 10px var(--layer-color, var(--cyan));
+  min-width: 2.5rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.layer-title-block { flex: 1; min-width: 0; }
+.layer-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fg-bright);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.layer-meta {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fg-dim);
+  margin-top: 0.25rem;
+  letter-spacing: 0.1em;
+}
+.layer-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+.badge-hours { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-dim); }
+.badge-lvl   { border-color: var(--magenta); color: var(--magenta); background: var(--magenta-dim); }
+.badge-done  { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+.layer-toggle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--fg-dim);
+  transition: transform 0.3s, color 0.2s;
+  flex-shrink: 0;
+}
+.layer-card.open .layer-toggle { transform: rotate(180deg); color: var(--cyan); }
+
+.layer-body {
+  display: none;
+  padding: 0 1.5rem 1.5rem;
+}
+.layer-card.open .layer-body { display: block; }
+
+.obj-line {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  color: var(--fg-dim);
+  margin: 1rem 0 1.25rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--layer-color, var(--cyan));
+  font-style: italic;
 }
 
-.hero{text-align:center; padding:26px 0 40px;}
-.hero h1{
-  font-family:var(--font-display); font-weight:900;
-  font-size:clamp(26px,5.6vw,54px);
-  letter-spacing:.10em; margin:0 0 14px; line-height:1.05;
-  color:#eafcff;
-  text-shadow:0 0 10px var(--cyan), 0 0 34px rgba(0,240,255,.65), 0 0 70px rgba(255,0,229,.35);
+/* WARNING BANNER for mislabeled courses */
+.course-warning {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--yellow);
+  background: rgba(247,232,0,0.07);
+  border: 1px solid rgba(247,232,0,0.3);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
 }
-.glitch{position:relative; display:inline-block;}
-.glitch::before,.glitch::after{
-  content:attr(data-text); position:absolute; left:0; top:0; width:100%;
-  pointer-events:none;
-}
-.glitch::before{
-  color:var(--magenta); text-shadow:0 0 12px var(--magenta);
-  clip-path:polygon(0 0,100% 0,100% 42%,0 42%);
-  animation:gl1 3.1s infinite linear alternate-reverse;
-}
-.glitch::after{
-  color:var(--cyan); text-shadow:0 0 12px var(--cyan);
-  clip-path:polygon(0 58%,100% 58%,100% 100%,0 100%);
-  animation:gl2 2.3s infinite linear alternate-reverse;
-}
-@keyframes gl1{
-  0%,84%{transform:translate(0,0);opacity:0;}
-  85%{transform:translate(-3px,-2px);opacity:.95;}
-  88%{transform:translate(3px,1px);opacity:.9;}
-  91%{transform:translate(-2px,2px);opacity:.85;}
-  94%,100%{transform:translate(0,0);opacity:0;}
-}
-@keyframes gl2{
-  0%,80%{transform:translate(0,0);opacity:0;}
-  81%{transform:translate(3px,2px);opacity:.95;}
-  85%{transform:translate(-3px,-1px);opacity:.9;}
-  89%{transform:translate(2px,-2px);opacity:.8;}
-  93%,100%{transform:translate(0,0);opacity:0;}
-}
-.hero p{
-  margin:0 auto; max-width:720px; font-size:13px; letter-spacing:.10em;
-  text-transform:uppercase; color:rgba(191,244,255,.55);
-}
-.hero p span{color:var(--green); text-shadow:0 0 10px rgba(0,255,157,.7);}
+.course-warning::before { content: '⚠ '; }
 
-.stats{
-  display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:26px;
-}
-.stat{
-  border:1px solid rgba(0,240,255,.28); background:var(--panel);
-  padding:10px 18px; min-width:118px;
-  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
-}
-.stat .k{font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(191,244,255,.5);}
-.stat .v{
-  font-family:var(--font-display); font-weight:900; font-size:20px;
-  color:var(--cyan); text-shadow:0 0 14px rgba(0,240,255,.8);
-}
+.topics { display: flex; flex-direction: column; gap: 1rem; }
 
-/* ================= MODULES ================= */
-.modules{
-  display:grid; gap:22px;
-  grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));
+.topic {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 0.9rem 1rem;
+  position: relative;
 }
-
-.module{
-  position:relative; background:var(--panel);
-  border:1px solid rgba(0,240,255,.22);
-  padding:18px 18px 14px;
-  transition:border-color .25s, box-shadow .25s, transform .25s;
-  box-shadow:0 0 0 rgba(0,240,255,0);
-  clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
+.topic-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--layer-color, var(--cyan));
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
 }
-.module::before{
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background:linear-gradient(150deg, rgba(0,240,255,.07), transparent 45%, rgba(255,0,229,.07));
+.topic-desc {
+  font-size: 0.88rem;
+  color: var(--fg-dim);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
 }
-.module:hover{
-  border-color:rgba(0,240,255,.62);
-  box-shadow:0 0 34px rgba(0,240,255,.22), inset 0 0 44px rgba(0,240,255,.05);
-  transform:translateY(-2px);
+.resources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
-.module.complete{
-  border-color:rgba(0,255,157,.55);
-  box-shadow:0 0 30px rgba(0,255,157,.18);
+.res-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--fg-dim);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  padding: 0.25rem 0.6rem;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.04em;
+}
+.res-link::before { content: '▸'; font-size: 0.6rem; opacity: 0.6; }
+.res-link:hover {
+  color: var(--layer-color, var(--cyan));
+  border-color: var(--layer-color, var(--cyan));
+  background: rgba(0,245,255,0.05);
+  box-shadow: 0 0 8px rgba(0,245,255,0.2);
+  text-decoration: none;
+}
+.res-link:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
 }
 
-.mod-head{
-  display:flex; align-items:center; gap:10px;
-  padding-bottom:12px; margin-bottom:12px;
-  border-bottom:1px dashed rgba(0,240,255,.22);
-  position:relative;
+/* spec grid */
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 }
-.mod-icon{
-  font-size:16px; color:var(--magenta);
-  text-shadow:0 0 12px var(--magenta);
-  animation:pulse 2.4s ease-in-out infinite;
+.spec-branch {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  position: relative;
 }
-@keyframes pulse{50%{opacity:.45;}}
-.mod-title{
-  font-family:var(--font-display); font-weight:900;
-  font-size:12.5px; letter-spacing:.16em; text-transform:uppercase;
-  margin:0; color:#dffaff; text-shadow:0 0 12px rgba(0,240,255,.65);
+.spec-branch-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
 }
-.mod-prog{
-  margin-left:auto; font-size:11px; letter-spacing:.12em;
-  color:var(--cyan); border:1px solid rgba(0,240,255,.35);
-  padding:2px 8px; white-space:nowrap;
+.spec-branch-title.linux  { color: var(--green); }
+.spec-branch-title.win    { color: var(--cyan); }
+.spec-branch-title.browser{ color: var(--yellow); }
+.spec-branch-title.kernel { color: var(--magenta); }
+
+/* Specialization checklist */
+.spec-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
 }
-.mod-prog.done{
-  color:var(--green); border-color:rgba(0,255,157,.6);
-  text-shadow:0 0 10px rgba(0,255,157,.9);
+.spec-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fg-dim);
+}
+.spec-check-btn {
+  width: 14px; height: 14px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem;
+  color: transparent;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.spec-check-btn:hover { border-color: var(--layer-color, var(--cyan)); }
+.spec-check-btn.checked {
+  background: var(--layer-color, var(--cyan));
+  border-color: var(--layer-color, var(--cyan));
+  color: var(--bg);
+  box-shadow: 0 0 6px var(--layer-color, var(--cyan));
 }
 
-/* ================= QUESTS ================= */
-.quest{
-  display:flex; align-items:center; gap:11px;
-  padding:9px 10px; margin:5px 0;
-  border-left:2px solid transparent;
-  cursor:pointer; position:relative;
-  transition:background .18s, border-color .18s, padding-left .18s;
-  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+.topic-check {
+  position: absolute;
+  top: 0.6rem; right: 0.6rem;
+  width: 18px; height: 18px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  color: transparent;
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
-.quest:hover{
-  background:rgba(0,240,255,.07);
-  border-left-color:var(--cyan);
-  padding-left:14px;
-}
-.quest:hover .qname{color:#fff; text-shadow:0 0 12px var(--cyan);}
-
-.chk{
-  flex:0 0 auto; width:20px; height:20px;
-  border:1px solid rgba(0,240,255,.55);
-  background:transparent; cursor:pointer;
-  display:grid; place-items:center;
-  color:transparent; font-size:12px; line-height:1;
-  transition:.2s; padding:0;
-}
-.quest:hover .chk{border-color:var(--cyan); box-shadow:0 0 10px rgba(0,240,255,.55);}
-.quest.done .chk{
-  border-color:var(--green); color:var(--green);
-  background:rgba(0,255,157,.12);
-  box-shadow:0 0 14px rgba(0,255,157,.7), inset 0 0 10px rgba(0,255,157,.25);
+.topic-check:hover { border-color: var(--layer-color, var(--cyan)); }
+.topic-check.checked {
+  background: var(--layer-color, var(--cyan));
+  border-color: var(--layer-color, var(--cyan));
+  color: var(--bg);
+  box-shadow: 0 0 8px var(--layer-color, var(--cyan));
 }
 
-.qbody{flex:1 1 auto; min-width:0;}
-.qname{
-  display:block; font-size:13px; letter-spacing:.06em; color:#cdf3ff;
-  transition:.2s; text-transform:uppercase;
-}
-.qmeta{
-  display:block; font-size:10.5px; letter-spacing:.08em;
-  color:rgba(191,244,255,.42); margin-top:1px;
-}
-.quest.done .qname{
-  color:rgba(0,255,157,.85); text-shadow:0 0 10px rgba(0,255,157,.55);
-}
-.quest.done .qmeta{color:rgba(0,255,157,.4);}
-.quest.done{background:rgba(0,255,157,.045); border-left-color:rgba(0,255,157,.7);}
-
-.qlink{
-  flex:0 0 auto; font-size:10px; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--magenta); text-decoration:none; padding:4px 8px;
-  border:1px solid rgba(255,0,229,.4); white-space:nowrap;
-  transition:.2s;
-  clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);
-}
-.qlink:hover{
-  background:rgba(255,0,229,.18); color:#fff;
-  box-shadow:0 0 16px rgba(255,0,229,.75);
-  text-shadow:0 0 8px var(--magenta);
+.footer {
+  text-align: center;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--fg-dim);
+  letter-spacing: 0.15em;
 }
 
-/* ================= FX ================= */
-.float-xp{
-  position:fixed; z-index:200; pointer-events:none;
-  font-family:var(--font-display); font-weight:900; font-size:14px;
-  color:var(--green); text-shadow:0 0 14px var(--green);
-  animation:floatup 1s ease-out forwards;
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.4; }
+  94% { opacity: 1; }
+  96% { opacity: 0.6; }
+  97% { opacity: 1; }
 }
-@keyframes floatup{
-  from{opacity:1; transform:translate(-50%,0) scale(1);}
-  to{opacity:0; transform:translate(-50%,-52px) scale(1.5);}
+.hdr-title { animation: flicker 8s infinite; }
+
+@media (max-width: 600px) {
+  .layer-header { flex-wrap: wrap; gap: 0.5rem; }
+  .layer-badges { order: 3; width: 100%; }
+  .spec-grid { grid-template-columns: 1fr; }
+  .hdr-stats { gap: 0.75rem; }
 }
 
-.toast{
-  position:fixed; left:50%; top:76px; transform:translate(-50%,-24px);
-  z-index:300; pointer-events:none; opacity:0;
-  font-family:var(--font-display); font-weight:900; letter-spacing:.22em;
-  font-size:13px; padding:12px 26px;
-  color:#02030a; background:linear-gradient(90deg,var(--yellow),var(--green));
-  box-shadow:0 0 40px rgba(252,238,10,.85);
-  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
-}
-.toast.show{animation:toastin 2.2s ease forwards;}
-@keyframes toastin{
-  0%{opacity:0; transform:translate(-50%,-24px) scale(.9);}
-  12%{opacity:1; transform:translate(-50%,0) scale(1);}
-  78%{opacity:1; transform:translate(-50%,0) scale(1);}
-  100%{opacity:0; transform:translate(-50%,-16px) scale(1.04);}
-}
-
-footer{
-  position:relative; z-index:10;
-  max-width:1280px; margin:0 auto; padding:0 20px 60px;
-  text-align:center; font-size:11px; letter-spacing:.12em;
-  color:rgba(191,244,255,.34); text-transform:uppercase;
-}
-footer .hl{color:var(--cyan); text-shadow:0 0 10px rgba(0,240,255,.7);}
-
-@media (max-width:520px){
-  .modules{grid-template-columns:1fr;}
-  .qlink{padding:4px 6px; font-size:9px;}
-  .hud-inner{padding:10px 14px; gap:10px;}
-  .brand{font-size:11px;}
-}
-@media (prefers-reduced-motion: reduce){
-  *{animation-duration:.001s !important; animation-iteration-count:1 !important;}
+@media (prefers-reduced-motion: reduce) {
+  .hdr-title { animation: none; }
+  * { transition-duration: 0.01ms !important; }
 }
 </style>
-</head>
-<body>
 
-<!-- BACKGROUND -->
-<div class="bg-glow"></div>
-<div class="grid-bg"></div>
-<div class="vignette"></div>
-<div class="scanlines"></div>
+<div class="app">
 
-<!-- BOOT -->
-<div class="boot" id="boot">
-  <div class="boot-inner"><pre id="bootlog"></pre></div>
+  <header class="hdr">
+    <div class="hdr-eyebrow">// NIGHT CITY BOOTCAMP :: VER 2077.11 — REVISED</div>
+    <h1 class="hdr-title">Advanced <span class="accent">Zero-Day</span> Research<br>Engineering</h1>
+    <p class="hdr-subtitle">Advanced Software Vulnerability Research &amp; Exploit Development Curriculum</p>
+    <div class="hdr-stats">
+      <div class="stat-chip">LAYERS <span class="val">11</span></div>
+      <div class="stat-chip">HOURS <span class="val">570–950</span></div>
+      <div class="stat-chip">SPECIALIZATIONS <span class="val">4</span></div>
+      <div class="stat-chip">RESOURCES <span class="val">FREE</span></div>
+    </div>
+  </header>
+
+  <!-- SPEC SELECTOR -->
+  <div id="specSelector" style="margin: 2rem 0 0; background: var(--panel); border: 1px solid var(--border); padding: 1rem 1.5rem;">
+    <div style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; color:var(--cyan); margin-bottom:0.75rem;">SELECT SPECIALIZATION PATH — PROGRESS TRACKS ONE BRANCH</div>
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem;" id="specBtns"></div>
+  </div>
+
+  <div class="progress-track">
+    <div class="prog-bar-track"><div class="prog-bar-fill" id="progBar"></div></div>
+    <div class="prog-layers" id="progLayers"></div>
+    <div class="prog-label">TOPICS COMPLETED: <span id="progText">0 / 0</span></div>
+  </div>
+
+  <div class="layers" id="layerList"></div>
+
+  <footer class="footer">
+    // STAY FROSTY, NETRUNNER · ALL RESOURCES FREE · TRACK YOUR PROGRESS LOCALLY //
+  </footer>
 </div>
 
-<!-- HUD -->
-<header class="hud">
-  <div class="hud-inner">
-    <div class="brand">NEURO<b>DECK</b> // SKILL TREE</div>
-    <div class="level-chip" id="levelChip">LVL 01</div>
-    <div class="xp-wrap">
-      <div class="xp-meta">
-        <span id="xpText">0 / 100 XP</span>
-        <span class="rank" id="rankText">SCRIPT KIDDIE</span>
-      </div>
-      <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
-    </div>
-    <div class="hud-actions">
-      <button class="btn" id="resetBtn">RESET</button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <!-- HERO -->
-  <section class="hero">
-    <h1><span class="glitch" data-text="SYSTEMS SKILL TREE">SYSTEMS SKILL TREE</span></h1>
-    <p>C · ASSEMBLY · MEMORY · SYSCALLS · LINUX · PYTHON · DEBUGGING &nbsp;//&nbsp; <span>48 NODES TO JACK IN</span></p>
-    <div class="stats">
-      <div class="stat"><div class="k">Nodes Cleared</div><div class="v" id="statDone">0/48</div></div>
-      <div class="stat"><div class="k">Total XP</div><div class="v" id="statXp">0</div></div>
-      <div class="stat"><div class="k">Completion</div><div class="v" id="statPct">0%</div></div>
-    </div>
-  </section>
-
-  <div class="modules" id="modules">
-
-    <!-- ============ C PROGRAMMING ============ -->
-    <section class="module" data-mod="c">
-      <div class="mod-head">
-        <span class="mod-icon">◈</span>
-        <h2 class="mod-title">C Programming</h2>
-        <span class="mod-prog">0/13</span>
-      </div>
-
-      <div class="quest" data-id="c-pointer-vars">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Pointer Variables</span>
-          <span class="qmeta">§2.2 · addresses, dereference, NULL</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/pointers.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-pointer-arith">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Pointer Arithmetic</span>
-          <span class="qmeta">§2.9.4 · p+1, array decay, strides</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/advanced_pointer_arithmetic.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-pointer-fn">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Pointers &amp; Functions</span>
-          <span class="qmeta">§2.3 · pass-by-reference, out-params</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/pointers_functions.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-malloc">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">malloc / free</span>
-          <span class="qmeta">§2.4 · heap vs stack, NULL checks, leaks</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/dynamic_memory.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-memcpy">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">memcpy</span>
-          <span class="qmeta">byte copy · n bytes · no overlap</span>
-        </div>
-        <a class="qlink" href="https://en.cppreference.com/c/string/byte/memcpy" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-memset">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">memset</span>
-          <span class="qmeta">byte fill · zeroing structs</span>
-        </div>
-        <a class="qlink" href="https://en.cppreference.com/c/string/byte/memset" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-bytefns">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Byte-String Function Index</span>
-          <span class="qmeta">memmove · memcmp · memchr · all of them</span>
-        </div>
-        <a class="qlink" href="https://en.cppreference.com/c/string/byte" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-structs">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Structs</span>
-          <span class="qmeta">§2.7 · -&gt; operator, nested, arrays of structs</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/structs.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-unions">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Unions</span>
-          <span class="qmeta">shared storage · type punning</span>
-        </div>
-        <a class="qlink" href="https://en.cppreference.com/c/language/union" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-fnptr">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Function Pointers</span>
-          <span class="qmeta">cppreference → "Pointers to functions"</span>
-        </div>
-        <a class="qlink" href="https://en.cppreference.com/c/language/pointer" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-voidstar">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">void* Type Casting</span>
-          <span class="qmeta">§2.9.3 · generic pointers, casts</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/advanced_voidstar.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-to-asm">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">C → Machine Code Model</span>
-          <span class="qmeta">§2.9.7 · compiling C to assembly</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/advanced_assembly.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="c-godbolt">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Godbolt Live Compiler</span>
-          <span class="qmeta">type C → see x86-64 ASM in real time</span>
-        </div>
-        <a class="qlink" href="https://godbolt.org" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-    </section>
-
-    <!-- ============ ASSEMBLY ============ -->
-    <section class="module" data-mod="asm">
-      <div class="mod-head">
-        <span class="mod-icon">◈</span>
-        <h2 class="mod-title">x86 / x64 Assembly</h2>
-        <span class="mod-prog">0/8</span>
-      </div>
-
-      <div class="quest" data-id="asm-basics">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Registers &amp; Addressing Modes</span>
-          <span class="qmeta">§7.1 · RAX/RBX/RCX/RDX/RSP/RBP/RIP · EAX/AX/AL · [rsp+8]</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C7-x86_64/basics.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-cheatsheet">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Stanford CS107 Cheat Sheet</span>
-          <span class="qmeta">one-pager · register roles, arg order</span>
-        </div>
-        <a class="qlink" href="https://web.stanford.edu/class/cs107/resources/x86-64-reference.pdf" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-functions">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Functions &amp; Stack Ops</span>
-          <span class="qmeta">§7.5 · push rbp / mov rbp,rsp / sub rsp,N / call / ret</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C7-x86_64/functions.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-common">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Core Instructions</span>
-          <span class="qmeta">§7.2 · mov · lea · add · sub · cmp · jmp · jcc</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C7-x86_64/common.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-felix">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Instruction Encoding Reference</span>
-          <span class="qmeta">felixcloutier · per-instruction flags &amp; bytes</span>
-        </div>
-        <a class="qlink" href="https://felixcloutier.com/x86" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-win64">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Windows x64 Calling Convention</span>
-          <span class="qmeta">RCX/RDX/R8/R9 · shadow space · volatile regs</span>
-        </div>
-        <a class="qlink" href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-sysv">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Linux System V AMD64 ABI</span>
-          <span class="qmeta">RDI/RSI/RDX/RCX/R8/R9 · red zone</span>
-        </div>
-        <a class="qlink" href="https://wiki.osdev.org/Calling_Conventions" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="asm-cdecl">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">cdecl / stdcall</span>
-          <span class="qmeta">32-bit conventions · context only</span>
-        </div>
-        <a class="qlink" href="https://learn.microsoft.com/en-us/cpp/cpp/calling-conventions?view=msvc-170" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-    </section>
-
-    <!-- ============ HOW PROGRAMS RUN ============ -->
-    <section class="module" data-mod="run">
-      <div class="mod-head">
-        <span class="mod-icon">◈</span>
-        <h2 class="mod-title">How Programs Run</h2>
-        <span class="mod-prog">0/9</span>
-      </div>
-
-      <div class="quest" data-id="run-memory">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Parts of Program Memory</span>
-          <span class="qmeta">§2.1 · stack frame: ret addr, saved RBP, locals</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C2-C_depth/scope_memory.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-anatomy">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Anatomy of a Program in Memory</span>
-          <span class="qmeta">diagrams · Linux process map · ASLR</span>
-        </div>
-        <a class="qlink" href="https://manybutfinite.com/post/anatomy-of-a-program-in-memory/" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-vm">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Virtual Memory</span>
-          <span class="qmeta">§13.3 · stack / heap / text / data segments</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C13-OS/vm.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-proc">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Processes</span>
-          <span class="qmeta">§13.2 · process lifecycle, address space</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/C13-OS/processes.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-rings">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Ring 0 vs Ring 3</span>
-          <span class="qmeta">privilege levels · userland vs kernel</span>
-        </div>
-        <a class="qlink" href="https://osdev.wiki/wiki/Security" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-syscall-table">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Linux x86_64 Syscall Table</span>
-          <span class="qmeta">RAX number → function · register args</span>
-        </div>
-        <a class="qlink" href="https://hackeradam.com/x86-64-linux-syscalls/" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-syscall-lwn">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">syscall Instruction Internals</span>
-          <span class="qmeta">LWN deep dive · how userland calls the kernel</span>
-        </div>
-        <a class="qlink" href="https://lwn.net/Articles/604287/" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-pe-spec">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">PE Format Spec</span>
-          <span class="qmeta">Microsoft official · how Windows loads a process</span>
-        </div>
-        <a class="qlink" href="https://learn.microsoft.com/en-us/windows/win32/debug/pe-format" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="run-pe-walk">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">PE Structure Walkthrough</span>
-          <span class="qmeta">headers → sections → IAT → entry point</span>
-        </div>
-        <a class="qlink" href="https://medium.com/@Ericdes/malware-analysis-the-pe-structure-overview-d3bad6051ff7" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-    </section>
-
-    <!-- ============ LINUX CLI ============ -->
-    <section class="module" data-mod="cli">
-      <div class="mod-head">
-        <span class="mod-icon">◈</span>
-        <h2 class="mod-title">Linux CLI</h2>
-        <span class="mod-prog">0/7</span>
-      </div>
-
-      <div class="quest" data-id="cli-basics">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Navigation &amp; Files</span>
-          <span class="qmeta">§17.1 · ls · cd · pwd · cat · cp · mv · rm</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/cmdln_basics.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="cli-search">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Searching</span>
-          <span class="qmeta">§17.6 · grep · find</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/grep.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="cli-perms">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">File Permissions</span>
-          <span class="qmeta">§17.7 · chmod · rwx bits</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/chmod.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="cli-proc">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Process Control</span>
-          <span class="qmeta">§17.9 · ps · kill</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/pskill.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="cli-redirect">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">I/O Redirection</span>
-          <span class="qmeta">§17.12 · &gt; and &lt;</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/ioredirect.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="cli-pipes">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Piping</span>
-          <span class="qmeta">§17.13 · the | operator</span>
-        </div>
-        <a class="qlink" href="https://diveintosystems.org/book/Appendix2/pipe.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="cli-explainshell">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">explainshell</span>
-          <span class="qmeta">any command + flags, explained instantly</span>
-        </div>
-        <a class="qlink" href="https://www.explainshell.com" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-    </section>
-
-    <!-- ============ PYTHON ============ -->
-    <section class="module" data-mod="py">
-      <div class="mod-head">
-        <span class="mod-icon">◈</span>
-        <h2 class="mod-title">Python</h2>
-        <span class="mod-prog">0/6</span>
-      </div>
-
-      <div class="quest" data-id="py-tutorial">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Language Basics</span>
-          <span class="qmeta">vars · loops · conditionals · functions</span>
-        </div>
-        <a class="qlink" href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="py-io">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">File I/O</span>
-          <span class="qmeta">open · read · write · with</span>
-        </div>
-        <a class="qlink" href="https://docs.python.org/3/tutorial/inputoutput.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="py-struct">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">struct Module</span>
-          <span class="qmeta">binary packing / unpacking</span>
-        </div>
-        <a class="qlink" href="https://docs.python.org/3/library/struct.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="py-socket">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">socket Module</span>
-          <span class="qmeta">TCP/UDP · connect · send · recv</span>
-        </div>
-        <a class="qlink" href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="py-socket-howto">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Socket Programming HOWTO</span>
-          <span class="qmeta">practical walkthrough</span>
-        </div>
-        <a class="qlink" href="https://docs.python.org/3/howto/sockets.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="py-subprocess">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">subprocess Module</span>
-          <span class="qmeta">spawn · pipes · check_output</span>
-        </div>
-        <a class="qlink" href="https://docs.python.org/3/library/subprocess.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-    </section>
-
-    <!-- ============ X64DBG ============ -->
-    <section class="module" data-mod="dbg">
-      <div class="mod-head">
-        <span class="mod-icon">◈</span>
-        <h2 class="mod-title">x64dbg</h2>
-        <span class="mod-prog">0/5</span>
-      </div>
-
-      <div class="quest" data-id="dbg-home">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Docs Home</span>
-          <span class="qmeta">official help index</span>
-        </div>
-        <a class="qlink" href="https://help.x64dbg.com/" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="dbg-gui">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">GUI Manual</span>
-          <span class="qmeta">CPU view · registers · hex dump · stack</span>
-        </div>
-        <a class="qlink" href="https://help.x64dbg.com/en/latest/gui/index.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="dbg-tips">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Tips &amp; Tricks</span>
-          <span class="qmeta">relative addressing · highlight · memory BPs</span>
-        </div>
-        <a class="qlink" href="https://help.x64dbg.com/en/latest/gui/tips.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="dbg-cmds">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Commands Index</span>
-          <span class="qmeta">breakpoints · tracing · debug control</span>
-        </div>
-        <a class="qlink" href="https://help.x64dbg.com/en/latest/commands/index.html" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-
-      <div class="quest" data-id="dbg-download">
-        <button class="chk" aria-label="toggle">✔</button>
-        <div class="qbody">
-          <span class="qname">Download Latest Snapshot</span>
-          <span class="qmeta">GitHub · x64dbg releases</span>
-        </div>
-        <a class="qlink" href="https://github.com/x64dbg/x64dbg" target="_blank" rel="noopener">JACK IN ↗</a>
-      </div>
-    </section>
-
-  </div>
-</main>
-
-<footer>
-  <span class="hl">ALL NODES VERIFIED</span> · diveintosystems.org links pulled from the live table of contents ·
-  cppreference / felixcloutier / Python docs / Microsoft Learn are permanent official sources
-</footer>
-
-<div class="toast" id="toast">LEVEL UP</div>
-
 <script>
-(function () {
-  'use strict';
+const LAYERS = [
+  {
+    num: '01',
+    title: 'Computer Environment',
+    color: '#00f5ff',
+    hours: '20–40h',
+    level: 'BOOT',
+    obj: 'Master the terminal, shell, and dev tools before touching a single exploit. Set up an isolated Linux VM — this is your research lab for every layer that follows.',
+    topics: [
+      {
+        name: 'Lab Setup — Isolated Linux VM',
+        desc: 'Install and configure a dedicated research VM (Kali, Ubuntu, or Debian). Snapshots, host-only networking, shared folders. This is prerequisite infrastructure — OST2 Fuzz1001 and most exploit labs require a Linux environment.',
+        resources: [
+          { label: 'VirtualBox: User Manual — Creating Your First VM', url: 'https://www.virtualbox.org/manual/ch01.html' },
+          { label: 'Kali Linux: VM Installation Guide', url: 'https://www.kali.org/docs/virtualization/install-virtualbox-guest-vm/' },
+          { label: 'Ubuntu Server: Installation Guide', url: 'https://ubuntu.com/server/docs/installation' },
+        ]
+      },
+      {
+        name: 'Shell & Command-Line Basics',
+        desc: 'Bash, zsh, navigation, pipes, redirection, scripting fundamentals.',
+        resources: [
+          { label: 'MIT Missing Semester: The Shell (Lecture 1)', url: 'https://missing.csail.mit.edu/2020/course-shell/' },
+          { label: 'MIT Missing Semester: Shell Tools & Scripting (Lecture 2)', url: 'https://missing.csail.mit.edu/2020/shell-tools/' },
+        ]
+      },
+      {
+        name: 'Command-Line Environment',
+        desc: 'Job control, dotfiles, tmux/screen, remote machines, SSH.',
+        resources: [
+          { label: 'MIT Missing Semester: Command-Line Environment (Lecture 5)', url: 'https://missing.csail.mit.edu/2020/command-line/' },
+          { label: 'MIT Missing Semester: Remote Machines (SSH section)', url: 'https://missing.csail.mit.edu/2020/command-line/#remote-machines' },
+        ]
+      },
+      {
+        name: 'Version Control (Git)',
+        desc: 'Git fundamentals — commit, branch, merge, rebase, remotes.',
+        resources: [
+          { label: 'MIT Missing Semester: Version Control (Git) — Lecture 6', url: 'https://missing.csail.mit.edu/2020/version-control/' },
+          { label: 'Pro Git Book: Chapter 2 — Git Basics', url: 'https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository' },
+        ]
+      },
+      {
+        name: 'Text Editors (Vim/Neovim)',
+        desc: 'Modal editing, macros, plugins — survival skills for a terminal world.',
+        resources: [
+          { label: 'MIT Missing Semester: Editors (Vim) — Lecture 3', url: 'https://missing.csail.mit.edu/2020/editors/' },
+          { label: 'Vim Tutor: Interactive Vim Basics', url: 'https://vimschool.netlify.app/' },
+        ]
+      },
+      {
+        name: 'Data Wrangling & Shell Tools',
+        desc: 'grep, sed, awk, sort, find — turning raw data into intelligence.',
+        resources: [
+          { label: 'MIT Missing Semester: Data Wrangling — Lecture 4', url: 'https://missing.csail.mit.edu/2020/data-wrangling/' },
+          { label: 'GNU grep Manual', url: 'https://www.gnu.org/software/grep/manual/grep.html' },
+          { label: 'GNU sed Manual', url: 'https://www.gnu.org/software/sed/manual/sed.html' },
+          { label: 'GNU awk (gawk) Manual', url: 'https://www.gnu.org/software/gawk/manual/gawk.html' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '02',
+    title: 'C Programming',
+    color: '#ff00aa',
+    hours: '60–100h',
+    level: 'CORE',
+    obj: 'C is the language of exploitation. Memory, pointers, undefined behavior — you must own all of it.',
+    topics: [
+      {
+        name: 'C Fundamentals',
+        desc: 'Variables, types, control flow, functions, arrays. Write real programs from day one.',
+        resources: [
+          { label: "Beej's Guide to C: Variables & Statements (Ch. 2–3)", url: 'https://beej.us/guide/bgc/html/split/variables-and-statements.html' },
+          { label: "Beej's Guide to C: Functions (Ch. 4)", url: 'https://beej.us/guide/bgc/html/split/functions.html' },
+          { label: "Beej's Guide to C: Arrays (Ch. 7)", url: 'https://beej.us/guide/bgc/html/split/arrays.html' },
+          { label: 'learn-c.org: Interactive Exercises', url: 'https://www.learn-c.org/' },
+        ]
+      },
+      {
+        name: 'Pointers & Memory',
+        desc: 'Pointer arithmetic, stack vs heap, malloc/free, manual memory management.',
+        resources: [
+          { label: "Beej's Guide to C: Pointers (Ch. 5)", url: 'https://beej.us/guide/bgc/html/split/pointers.html' },
+          { label: "Beej's Guide to C: Manual Memory Allocation (Ch. 25)", url: 'https://beej.us/guide/bgc/html/split/manual-memory-allocation.html' },
+          { label: 'GNU C Manual: Pointers', url: 'https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Pointers' },
+          { label: 'Linux Man-page: malloc(3)', url: 'https://man7.org/linux/man-pages/man3/malloc.3.html' },
+        ]
+      },
+      {
+        name: 'Structs, Unions & Bitfields',
+        desc: 'Composite types, padding, alignment, packed structs. Essential for binary format parsing.',
+        resources: [
+          { label: "Beej's Guide to C: Structs (Ch. 8)", url: 'https://beej.us/guide/bgc/html/split/structs.html' },
+          { label: "Beej's Guide to C: Unions & Bit-Fields (Ch. 20)", url: 'https://beej.us/guide/bgc/html/split/structs-ii-more-fun-with-structs.html' },
+          { label: 'GNU C Manual: Structures', url: 'https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Structures' },
+          { label: 'GNU C Manual: Bit Fields', url: 'https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Bit-Fields' },
+        ]
+      },
+      {
+        name: 'File I/O & System Calls',
+        desc: 'fopen/fread/fwrite, low-level read/write, errno, file descriptors.',
+        resources: [
+          { label: "Beej's Guide to C: File I/O (Ch. 12)", url: 'https://beej.us/guide/bgc/html/split/file-inputoutput.html' },
+          { label: 'Linux Man-page: open(2)', url: 'https://man7.org/linux/man-pages/man2/open.2.html' },
+          { label: 'Linux Man-page: read(2)', url: 'https://man7.org/linux/man-pages/man2/read.2.html' },
+          { label: 'Linux Man-page: write(2)', url: 'https://man7.org/linux/man-pages/man2/write.2.html' },
+        ]
+      },
+      {
+        name: 'C Standard Library',
+        desc: 'string.h, stdlib.h, stdio.h — know the APIs that hide the bugs.',
+        resources: [
+          { label: "Beej's Guide to C: Strings (Ch. 7)", url: 'https://beej.us/guide/bgc/html/split/strings.html' },
+          { label: 'SEI CERT C: STR31-C — Do not truncate strings', url: 'https://wiki.sei.cmu.edu/confluence/display/c/STR31-C.+Guarantee+that+storage+for+strings+has+sufficient+space+for+character+data+and+the+null+terminator' },
+          { label: 'SEI CERT C: MEM30-C — Do not access freed memory', url: 'https://wiki.sei.cmu.edu/confluence/display/c/MEM30-C.+Do+not+access+freed+memory' },
+          { label: 'cppreference: C Standard Library Reference', url: 'https://en.cppreference.com/w/c' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '03',
+    title: 'C++ & Python',
+    color: '#f7e800',
+    hours: '40–70h',
+    level: 'CORE',
+    obj: 'C++ for real-world target software; Python for rapid exploit scripting and tooling.',
+    topics: [
+      {
+        name: 'C++ Core Language',
+        desc: 'Classes, RAII, templates, smart pointers, move semantics, vtables.',
+        resources: [
+          { label: 'LearnCpp.com: Classes & OOP (Ch. 14–15)', url: 'https://www.learncpp.com/cpp-tutorial/introduction-to-object-oriented-programming/' },
+          { label: 'LearnCpp.com: Templates (Ch. 11)', url: 'https://www.learncpp.com/cpp-tutorial/function-templates/' },
+          { label: 'LearnCpp.com: Move Semantics (Ch. 22)', url: 'https://www.learncpp.com/cpp-tutorial/introduction-to-smart-pointers-move-semantics/' },
+        ]
+      },
+      {
+        name: 'C++ Memory Model',
+        desc: 'new/delete, unique_ptr/shared_ptr, object lifetime, dangling references.',
+        resources: [
+          { label: 'LearnCpp.com: Dynamic Memory Allocation (Ch. 19)', url: 'https://www.learncpp.com/cpp-tutorial/dynamic-memory-allocation-with-new-and-delete/' },
+          { label: 'LearnCpp.com: Smart Pointers (Ch. 22.1–22.5)', url: 'https://www.learncpp.com/cpp-tutorial/introduction-to-smart-pointers-move-semantics/' },
+          { label: 'cppreference: std::unique_ptr', url: 'https://en.cppreference.com/w/cpp/memory/unique_ptr' },
+          { label: 'cppreference: std::shared_ptr', url: 'https://en.cppreference.com/w/cpp/memory/shared_ptr' },
+        ]
+      },
+      {
+        name: 'Python Scripting Fundamentals',
+        desc: "Control flow, file I/O, bytes/struct, subprocess — the exploit scripter's toolkit.",
+        resources: [
+          { label: 'Python 3 Tutorial: Control Flow', url: 'https://docs.python.org/3/tutorial/controlflow.html' },
+          { label: 'Python 3 Tutorial: Input & Output (Files)', url: 'https://docs.python.org/3/tutorial/inputoutput.html' },
+          { label: 'Python Docs: subprocess module', url: 'https://docs.python.org/3/library/subprocess.html' },
+        ]
+      },
+      {
+        name: 'Python for Binary Interaction',
+        desc: 'struct.pack/unpack, ctypes, pwntools concepts, socket programming.',
+        resources: [
+          { label: 'Python Docs: struct — Binary Data Packing', url: 'https://docs.python.org/3/library/struct.html' },
+          { label: 'Python Docs: ctypes — Foreign Function Library', url: 'https://docs.python.org/3/library/ctypes.html' },
+          { label: 'Python Docs: socket — Network Interface', url: 'https://docs.python.org/3/library/socket.html' },
+          { label: 'pwntools Docs: Getting Started', url: 'https://docs.pwntools.com/en/stable/intro.html' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '04',
+    title: 'DSA & Bitwise Math',
+    color: '#00ff88',
+    hours: '40–60h',
+    level: 'CORE',
+    obj: 'Algorithms are how you reason about complexity. Bit manipulation is how you read binary.',
+    topics: [
+      {
+        name: 'Data Structures & Algorithms',
+        desc: 'Arrays, linked lists, trees, graphs, hash tables, sorting, Big-O.',
+        resources: [
+          { label: 'MIT 6.006: Lecture Notes (all)', url: 'https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/pages/lecture-notes/' },
+          { label: 'Visualgo: Data Structure Visualizations', url: 'https://visualgo.net/en' },
+        ]
+      },
+      {
+        name: 'Bitwise Operations & Number Theory',
+        desc: "AND/OR/XOR/NOT, shifts, two's complement, integer overflow, sign extension.",
+        resources: [
+          { label: 'GNU C Manual: Bit Shifting', url: 'https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Bit-Shifting' },
+          { label: 'GNU C Manual: Bitwise Operations', url: 'https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Bitwise-Logical-Operators' },
+          { label: "Beej's Guide to C: Bit Manipulation (Ch. 15)", url: 'https://beej.us/guide/bgc/html/split/bitwise-operations.html' },
+        ]
+      },
+      {
+        name: 'Integer Representation & Arithmetic',
+        desc: 'Fixed-width integers, overflow/underflow, truncation, widening/narrowing conversions.',
+        resources: [
+          { label: 'SEI CERT C: INT — Integer Rules Overview', url: 'https://wiki.sei.cmu.edu/confluence/display/c/INT-+Integer' },
+          { label: 'MITRE CWE-190: Integer Overflow', url: 'https://cwe.mitre.org/data/definitions/190.html' },
+          { label: 'MITRE CWE-191: Integer Underflow', url: 'https://cwe.mitre.org/data/definitions/191.html' },
+          { label: 'MITRE CWE-197: Numeric Truncation Error', url: 'https://cwe.mitre.org/data/definitions/197.html' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '05',
+    title: 'x86-64 Assembly',
+    color: '#ff6b1a',
+    hours: '50–80h',
+    level: 'ADVANCED',
+    obj: 'You cannot exploit what you cannot read. x86-64 assembly is the native tongue of exploitation.',
+    topics: [
+      {
+        name: 'x86-64 Architecture & Registers',
+        desc: 'GPRs, RFLAGS, segment registers, calling conventions (System V AMD64 ABI).',
+        resources: [
+          { label: 'OST2 Arch1001: x86-64 Assembly (full course)', url: 'https://ost2.fyi/Arch1001' },
+          { label: 'Intel SDM Vol. 1: Basic Architecture (Ch. 3 — GPRs)', url: 'https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html' },
+          { label: 'System V AMD64 ABI (calling conventions)', url: 'https://gitlab.com/x86-psABIs/x86-64-ABI' },
+          { label: 'Felix Cloutier x86 ISA Reference (searchable)', url: 'https://www.felixcloutier.com/x86/' },
+        ]
+      },
+      {
+        name: 'Instruction Set Deep Dive',
+        desc: 'MOV, LEA, arithmetic, logical, control flow, stack ops, SIMD basics.',
+        resources: [
+          { label: 'Felix Cloutier x86 Reference: MOV', url: 'https://www.felixcloutier.com/x86/mov' },
+          { label: 'Felix Cloutier x86 Reference: LEA', url: 'https://www.felixcloutier.com/x86/lea' },
+          { label: 'Felix Cloutier x86 Reference: PUSH/POP', url: 'https://www.felixcloutier.com/x86/push' },
+          { label: 'Intel SDM Vol. 2: Instruction Set Reference (A–Z)', url: 'https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html' },
+        ]
+      },
+      {
+        name: 'C-to-Assembly Translation',
+        desc: 'How the compiler maps C constructs to assembly — loops, structs, function calls.',
+        resources: [
+          { label: 'Compiler Explorer (Godbolt) — live C→asm', url: 'https://godbolt.org/' },
+          { label: 'GCC: Options That Control Optimization (-O flags)', url: 'https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html' },
+          { label: 'GCC: How to Produce Assembly Output (-S flag)', url: 'https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html' },
+        ]
+      },
+      {
+        name: 'NASM / AT&T Syntax & Inline Asm',
+        desc: 'Writing assembly directly, inline asm in C, assembler directives.',
+        resources: [
+          { label: 'NASM Manual: Chapter 1 — Introduction & Syntax', url: 'https://www.nasm.us/doc/nasmdoc1.html' },
+          { label: 'NASM Manual: Full Documentation', url: 'https://www.nasm.us/docs.php' },
+          { label: 'GCC: Extended Asm — Inline Assembly', url: 'https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html' },
+          { label: 'GNU Assembler (as) Manual', url: 'https://sourceware.org/binutils/docs/as/' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '06',
+    title: 'OS Internals',
+    color: '#9b30ff',
+    hours: '60–90h',
+    level: 'ADVANCED',
+    obj: 'Exploits live in the gap between application and OS. Know every millimeter of that gap.',
+    topics: [
+      {
+        name: 'Operating System Concepts',
+        desc: 'Processes, threads, scheduling, IPC, system calls, privilege levels.',
+        resources: [
+          { label: 'OSTEP: Intro — Virtualization (Part 1)', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/intro.pdf' },
+          { label: 'OSTEP: Chapter 4 — The Abstraction: The Process', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf' },
+          { label: 'OSTEP: Chapter 13 — The Abstraction: Address Spaces', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf' },
+        ]
+      },
+      {
+        name: 'Virtual Memory & Paging',
+        desc: 'Page tables, TLB, virtual address spaces, memory mappings, mmap.',
+        resources: [
+          { label: 'OSTEP: Chapter 18 — Paging: Introduction', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf' },
+          { label: 'OSTEP: Chapter 19 — Translation-Lookaside Buffers (TLB)', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/vm-tlbs.pdf' },
+          { label: 'Linux Kernel Docs: Memory Management (admin-guide)', url: 'https://www.kernel.org/doc/html/latest/admin-guide/mm/index.html' },
+          { label: 'Linux Man-page: mmap(2)', url: 'https://man7.org/linux/man-pages/man2/mmap.2.html' },
+          { label: 'OST2 Arch2001: OS Internals (Memory chapter)', url: 'https://ost2.fyi/Arch2001' },
+        ]
+      },
+      {
+        name: 'Linux Process Model',
+        desc: 'fork/exec, process groups, signals, /proc filesystem, namespaces.',
+        resources: [
+          { label: 'Linux Man-page: fork(2)', url: 'https://man7.org/linux/man-pages/man2/fork.2.html' },
+          { label: 'Linux Man-page: execve(2)', url: 'https://man7.org/linux/man-pages/man2/execve.2.html' },
+          { label: 'Linux Man-page: signal(7) — Overview of Signals', url: 'https://man7.org/linux/man-pages/man7/signal.7.html' },
+          { label: 'Linux Man-page: proc(5) — /proc filesystem', url: 'https://man7.org/linux/man-pages/man5/proc.5.html' },
+          { label: 'Linux Kernel Docs: Namespaces', url: 'https://www.kernel.org/doc/html/latest/userspace-api/namespaces.html' },
+        ]
+      },
+      {
+        name: 'Heap Internals',
+        desc: 'ptmalloc2 / glibc malloc: bins, chunks, metadata — the target of heap exploits.',
+        resources: [
+          { label: 'OSTEP: Chapter 17 — Free-Space Management', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf' },
+          { label: 'Linux Man-page: malloc(3)', url: 'https://man7.org/linux/man-pages/man3/malloc.3.html' },
+          { label: 'glibc Malloc Internals (sourceware wiki)', url: 'https://sourceware.org/glibc/wiki/MallocInternals' },
+          { label: 'How2Heap: Heap Exploitation Techniques (GitHub)', url: 'https://github.com/shellphish/how2heap' },
+        ]
+      },
+      {
+        name: 'Concurrency & Synchronization',
+        desc: 'Threads, mutexes, semaphores, races, atomics — race conditions are bugs.',
+        resources: [
+          { label: 'OSTEP: Chapter 26 — Concurrency: An Introduction', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf' },
+          { label: 'OSTEP: Chapter 28 — Locks', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf' },
+          { label: 'OSTEP: Chapter 32 — Race Conditions & Semaphores', url: 'https://pages.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf' },
+          { label: 'Linux Man-page: pthreads(7)', url: 'https://man7.org/linux/man-pages/man7/pthreads.7.html' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '07',
+    title: 'Compilers & Binary Formats',
+    color: '#00f5ff',
+    hours: '40–60h',
+    level: 'ADVANCED',
+    obj: 'Understand how source becomes binary. ELF and PE are the maps of your target.',
+    topics: [
+      {
+        name: 'Compilation Pipeline',
+        desc: 'Preprocessor → compiler → assembler → linker. Each stage and its artifacts.',
+        resources: [
+          { label: 'GCC Docs: Overall Options (-E, -S, -c, -o)', url: 'https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html' },
+          { label: 'GCC Docs: Preprocessor Options', url: 'https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html' },
+          { label: 'Compiler Explorer (Godbolt) — live pipeline viz', url: 'https://godbolt.org/' },
+          { label: 'CMake Tutorial: Step 1 — A Basic Starting Point', url: 'https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html' },
+        ]
+      },
+      {
+        name: 'ELF Binary Format',
+        desc: 'ELF header, sections, segments, symbol tables, relocations, dynamic linking.',
+        resources: [
+          { label: 'Linux Man-page: elf(5) — ELF Format Reference', url: 'https://man7.org/linux/man-pages/man5/elf.5.html' },
+          { label: 'GNU Binutils: readelf manual', url: 'https://sourceware.org/binutils/docs/binutils/readelf.html' },
+          { label: 'GNU Binutils: objdump manual', url: 'https://sourceware.org/binutils/docs/binutils/objdump.html' },
+          { label: 'Oracle: Linker and Libraries Guide — ELF ABI', url: 'https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-46512.html' },
+        ]
+      },
+      {
+        name: 'PE Binary Format (Windows)',
+        desc: 'PE/PE32+ headers, sections, imports/exports, relocation tables.',
+        resources: [
+          { label: 'Microsoft Docs: PE Format Reference', url: 'https://learn.microsoft.com/en-us/windows/win32/debug/pe-format' },
+          { label: 'corkami PE wiki (visual PE layout)', url: 'https://github.com/corkami/pics/tree/master/binary/pe' },
+          { label: 'PE-bear: free PE viewer (GitHub releases)', url: 'https://github.com/hasherezade/pe-bear' },
+        ]
+      },
+      {
+        name: 'Linker, Loader & Dynamic Linking',
+        desc: 'GOT/PLT, lazy binding, LD_PRELOAD, ASLR interaction with linking.',
+        resources: [
+          { label: 'GNU Binutils: ld (linker) manual', url: 'https://sourceware.org/binutils/docs/ld/' },
+          { label: 'Linux Man-page: ld.so(8) — Dynamic Linker', url: 'https://man7.org/linux/man-pages/man8/ld.so.8.html' },
+          { label: 'Linux Man-page: dlopen(3) — Dynamic Loading', url: 'https://man7.org/linux/man-pages/man3/dlopen.3.html' },
+          { label: 'How the ELF Ruined Christmas (PLT/GOT deep dive)', url: 'https://www.cs.dartmouth.edu/~sergey/cs108/2015/elfnotes.pdf' },
+        ]
+      },
+      {
+        name: 'Compiler Optimizations & ABI',
+        desc: 'Inlining, loop unrolling, vectorization — how optimizations change code shape.',
+        resources: [
+          { label: 'GCC Docs: Optimize Options (all -O flags explained)', url: 'https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html' },
+          { label: 'Compiler Explorer — compare O0 vs O2 vs O3', url: 'https://godbolt.org/' },
+          { label: 'System V AMD64 ABI: Calling Conventions', url: 'https://gitlab.com/x86-psABIs/x86-64-ABI' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '08',
+    title: 'Debugging & Reverse Engineering',
+    color: '#ff00aa',
+    hours: '50–80h',
+    level: 'ADVANCED',
+    obj: 'You are paid to understand programs written by others with no source. These are your tools.',
+    topics: [
+      {
+        name: 'GDB Mastery',
+        desc: 'Breakpoints, watchpoints, memory inspection, scripting with Python/pwndbg, core dumps.',
+        resources: [
+          { label: 'GDB Docs: Breakpoints & Watchpoints (Ch. 5)', url: 'https://sourceware.org/gdb/current/onlinedocs/gdb/Breakpoints.html' },
+          { label: 'GDB Docs: Examining Memory (Ch. 10)', url: 'https://sourceware.org/gdb/current/onlinedocs/gdb/Memory.html' },
+          { label: 'GDB Docs: Python API for GDB Scripting', url: 'https://sourceware.org/gdb/current/onlinedocs/gdb/Python.html' },
+          { label: 'OST2 Dbg1012: Intro to GDB (full course)', url: 'https://ost2.fyi/Dbg1012' },
+          { label: 'pwndbg: GDB plugin for exploit dev (GitHub)', url: 'https://github.com/pwndbg/pwndbg' },
+        ]
+      },
+      {
+        name: 'Ghidra: Static Analysis',
+        desc: 'Decompiler, function graph, cross-references, scripting, type recovery.',
+        resources: [
+          { label: 'Ghidra Student Guide (NSA official — includes decompiler lessons)', url: 'https://ghidra.re/ghidra_docs/GhidraClass/Beginner/Introduction_to_Ghidra_Student_Guide.html' },
+          { label: 'OST2 Dbg1102: Intro to Ghidra (full course)', url: 'https://ost2.fyi/Dbg1102' },
+          { label: 'Ghidra Script Development Guide', url: 'https://ghidra.re/ghidra_docs/GhidraClass/Intermediate/GhidraScriptAPIClass.html' },
+        ]
+      },
+      {
+        name: 'Dynamic Analysis Techniques',
+        desc: 'Tracing, strace/ltrace, ptrace API, instrumentation with Frida/PIN.',
+        resources: [
+          { label: 'Linux Man-page: strace(1) — Syscall Tracer', url: 'https://man7.org/linux/man-pages/man1/strace.1.html' },
+          { label: 'Linux Man-page: ptrace(2) — Process Trace API', url: 'https://man7.org/linux/man-pages/man2/ptrace.2.html' },
+          { label: 'Frida: Dynamic Instrumentation Toolkit (Docs)', url: 'https://frida.re/docs/home/' },
+          { label: 'Frida: JavaScript API Reference', url: 'https://frida.re/docs/javascript-api/' },
+        ]
+      },
+      {
+        name: 'Source-Code Auditing',
+        desc: 'Systematic techniques for reading unfamiliar codebases: data flow tracing, attack surface mapping, sink-first analysis. This is how you find bugs in real software — methodically, not by luck.',
+        resources: [
+          { label: 'OWASP Code Review Guide (free, Creative Commons licensed)', url: 'https://owasp.org/www-project-code-review-guide/' },
+          { label: 'SEI CERT C: Full Secure Coding Standard', url: 'https://wiki.sei.cmu.edu/confluence/display/c/SEI+CERT+C+Coding+Standard' },
+          { label: 'GitHub: CodeQL — Semantic Code Analysis', url: 'https://codeql.github.com/docs/' },
+        ]
+      },
+      {
+        name: 'Crash Triage & Core Dump Analysis',
+        desc: 'Identifying crash type, controlled/uncontrolled, distinguishing bugs from security-relevant findings, exploitability assessment.',
+        resources: [
+          { label: 'GDB Docs: Analyzing Core Dumps', url: 'https://sourceware.org/gdb/current/onlinedocs/gdb/Files.html#index-core-dump-file' },
+          { label: 'GDB Docs: Backtraces (bt command)', url: 'https://sourceware.org/gdb/current/onlinedocs/gdb/Backtrace.html' },
+          { label: 'Linux Man-page: core(5) — Core Dump Format', url: 'https://man7.org/linux/man-pages/man5/core.5.html' },
+          { label: 'Google: exploitable GDB plugin (crash triage)', url: 'https://github.com/jfoote/exploitable' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '09',
+    title: 'Vulnerability Classes',
+    color: '#f7e800',
+    hours: '60–90h',
+    level: 'SPECIALIST',
+    obj: 'Know every vulnerability class — its root cause, trigger conditions, and exploitation primitives.',
+    warning: 'NOTE ON OST2 VULNS1002: This course covers vulnerability analysis (UAF, race conditions, type confusion, uninitialized data) — not exploit development engineering. It will not teach you shellcoding, ROP chains, or bypass technique construction. Treat it as the "find the bug" layer, not "write the exploit" layer.',
+    topics: [
+      {
+        name: 'Memory Corruption Fundamentals',
+        desc: 'Stack overflows, heap overflows, off-by-one errors — the classics.',
+        resources: [
+          { label: 'OST2 Vulns1001: Software Vulnerabilities (full course)', url: 'https://ost2.fyi/Vulns1001' },
+          { label: 'MITRE CWE-121: Stack-based Buffer Overflow', url: 'https://cwe.mitre.org/data/definitions/121.html' },
+          { label: 'MITRE CWE-122: Heap-based Buffer Overflow', url: 'https://cwe.mitre.org/data/definitions/122.html' },
+          { label: 'MITRE CWE-193: Off-by-one Error', url: 'https://cwe.mitre.org/data/definitions/193.html' },
+        ]
+      },
+      {
+        name: 'Use-After-Free & Type Confusion',
+        desc: 'Dangling pointers, double free, type confusion in C++ — modern exploit primitives.',
+        resources: [
+          { label: 'OST2 Vulns1002: Vulnerability Analysis — UAF & Type Confusion (note: analysis only, not exploit dev)', url: 'https://ost2.fyi/Vulns1002' },
+          { label: 'MITRE CWE-416: Use After Free', url: 'https://cwe.mitre.org/data/definitions/416.html' },
+          { label: 'MITRE CWE-415: Double Free', url: 'https://cwe.mitre.org/data/definitions/415.html' },
+          { label: 'MITRE CWE-843: Type Confusion', url: 'https://cwe.mitre.org/data/definitions/843.html' },
+        ]
+      },
+      {
+        name: 'Integer Vulnerabilities',
+        desc: 'Integer overflow/underflow, sign confusion, truncation leading to memory corruption.',
+        resources: [
+          { label: 'SEI CERT C: INT30-C — Unsigned Integer Wrap', url: 'https://wiki.sei.cmu.edu/confluence/display/c/INT30-C.+Ensure+that+unsigned+integer+operations+do+not+wrap' },
+          { label: 'SEI CERT C: INT32-C — Signed Integer Overflow', url: 'https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow' },
+          { label: 'MITRE CWE-190: Integer Overflow or Wraparound', url: 'https://cwe.mitre.org/data/definitions/190.html' },
+          { label: 'MITRE CWE-194: Unexpected Sign Extension', url: 'https://cwe.mitre.org/data/definitions/194.html' },
+          { label: 'OST2 Vulns1001: Integer Vulnerabilities module', url: 'https://ost2.fyi/Vulns1001' },
+        ]
+      },
+      {
+        name: 'Format String Vulnerabilities',
+        desc: '%n, arbitrary read/write, format string exploitation on modern targets.',
+        resources: [
+          { label: 'MITRE CWE-134: Use of Externally-Controlled Format String', url: 'https://cwe.mitre.org/data/definitions/134.html' },
+          { label: 'OST2 Vulns1001: Format String module', url: 'https://ost2.fyi/Vulns1001' },
+          { label: 'printf(3) man-page: format specifiers (%n behavior)', url: 'https://man7.org/linux/man-pages/man3/printf.3.html' },
+        ]
+      },
+      {
+        name: 'Race Conditions & TOCTOU',
+        desc: 'Time-of-check/time-of-use, filesystem races, memory races in concurrent programs.',
+        resources: [
+          { label: 'MITRE CWE-362: Race Condition (Concurrent Execution)', url: 'https://cwe.mitre.org/data/definitions/362.html' },
+          { label: 'MITRE CWE-367: TOCTOU Race Condition', url: 'https://cwe.mitre.org/data/definitions/367.html' },
+          { label: 'SEI CERT C: CON32-C — Prevent Data Races on Bit-Fields', url: 'https://wiki.sei.cmu.edu/confluence/display/c/CON32-C.+Prevent+data+races+when+accessing+bit-fields+from+multiple+threads' },
+          { label: 'OST2 Vulns1002: Race Condition module (analysis focus)', url: 'https://ost2.fyi/Vulns1002' },
+        ]
+      },
+      {
+        name: 'Patch Analysis',
+        desc: 'Reading security fixes to understand root cause, find variant bugs, and reconstruct an exploitable primitive from a commit diff. A core research skill: most 1-day research starts here.',
+        resources: [
+          { label: 'Google Project Zero: Blog — Reading Patch Diffs', url: 'https://googleprojectzero.blogspot.com/' },
+          { label: 'GitHub: git diff & patch format documentation', url: 'https://git-scm.com/docs/git-diff' },
+          { label: 'NIST NVD: Patch links via CVE references', url: 'https://nvd.nist.gov/' },
+          { label: 'Linux Kernel: Security fixes commit log (stable)', url: 'https://www.kernel.org/pub/linux/kernel/v6.x/' },
+        ]
+      },
+      {
+        name: 'Mitigations & Bypass Techniques',
+        desc: 'ASLR, NX/DEP, stack canaries, CFI, RELRO — and how research defeats them.',
+        resources: [
+          { label: 'OST2 Vulns1002: Vulnerability Analysis — Mitigations module (analysis only, not exploit dev)', url: 'https://ost2.fyi/Vulns1002' },
+          { label: 'Clang CFI Docs: Control Flow Integrity', url: 'https://clang.llvm.org/docs/ControlFlowIntegrity.html' },
+          { label: 'Linux Kernel: randomize_va_space — ASLR Documentation', url: 'https://www.kernel.org/doc/html/latest/admin-guide/sysctl/kernel.html#randomize-va-space' },
+          { label: 'GCC Docs: Stack Protector (canaries)', url: 'https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '10',
+    title: 'Fuzzing & Sanitizers',
+    color: '#00ff88',
+    hours: '50–80h',
+    level: 'SPECIALIST',
+    obj: 'Automated bug hunting. Fuzz intelligently, sanitize ruthlessly, never miss a crash.',
+    topics: [
+      {
+        name: 'AFL++ Coverage-Guided Fuzzing',
+        desc: 'Corpus, instrumentation, mutation strategies, persistent mode, fork server.',
+        resources: [
+          { label: 'AFL++: Fuzzing in Depth (official guide)', url: 'https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md' },
+          { label: 'AFL++: Instrumentation Options (docs)', url: 'https://github.com/AFLplusplus/AFLplusplus/blob/stable/instrumentation/README.md' },
+          { label: 'AFL++: Persistent Mode & Fork Server (docs)', url: 'https://github.com/AFLplusplus/AFLplusplus/blob/stable/utils/persistent_mode/README.md' },
+          { label: 'OST2 Fuzz1001: Fuzzing (full course — requires Linux VM)', url: 'https://ost2.fyi/Fuzz1001' },
+        ]
+      },
+      {
+        name: 'libFuzzer & Structured Fuzzing',
+        desc: 'LLVMFuzzerTestOneInput, corpus management, coverage feedback, structure-aware fuzzing.',
+        resources: [
+          { label: 'LLVM libFuzzer: Full Documentation', url: 'https://llvm.org/docs/LibFuzzer.html' },
+          { label: 'LLVM libFuzzer: Tutorial', url: 'https://llvm.org/docs/LibFuzzer.html#toy-example' },
+          { label: 'Google: Fuzzing at Scale — ClusterFuzz Guide', url: 'https://google.github.io/clusterfuzz/using-clusterfuzz/' },
+          { label: 'OST2 Fuzz1001: Structure-aware Fuzzing module', url: 'https://ost2.fyi/Fuzz1001' },
+        ]
+      },
+      {
+        name: 'AddressSanitizer (ASan)',
+        desc: 'Detecting heap/stack/global buffer overflows, UAF, initialization order bugs.',
+        resources: [
+          { label: 'Google Sanitizers: ASan Wiki (flags & output)', url: 'https://github.com/google/sanitizers/wiki/AddressSanitizer' },
+          { label: 'Google Sanitizers: ASan — How it Works', url: 'https://github.com/google/sanitizers/wiki/AddressSanitizerAlgorithm' },
+          { label: 'Clang Docs: AddressSanitizer', url: 'https://clang.llvm.org/docs/AddressSanitizer.html' },
+        ]
+      },
+      {
+        name: 'UndefinedBehaviorSanitizer (UBSan)',
+        desc: 'Integer overflow, null dereference, misaligned access — catching UB at runtime.',
+        resources: [
+          { label: 'Clang Docs: UndefinedBehaviorSanitizer (all checks)', url: 'https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html' },
+          { label: 'GCC Docs: Instrumentation — -fsanitize=undefined', url: 'https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html' },
+        ]
+      },
+      {
+        name: 'Fuzzing Infrastructure & Triage',
+        desc: 'ClusterFuzz, crash deduplication, minimization, reproducer generation.',
+        resources: [
+          { label: 'AFL++: Crash Triage & Minimization (afl-tmin)', url: 'https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/fuzzing_in_depth.md#i-have-a-crash-what-now' },
+          { label: 'AFL++: afl-tmin manual (input minimization)', url: 'https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/afl-fuzz_approach.md#afl-tmin' },
+          { label: 'Google ClusterFuzz: Architecture & Usage', url: 'https://google.github.io/clusterfuzz/' },
+          { label: 'OST2 Fuzz1001: Crash Triage module', url: 'https://ost2.fyi/Fuzz1001' },
+        ]
+      },
+    ]
+  },
+  {
+    num: '11',
+    title: 'Specialization Paths',
+    color: '#ff6b1a',
+    hours: '100–200h per path',
+    level: 'EXPERT',
+    obj: 'Choose your specialization. Each path is a career in itself — go deep, go further. Hours are per specialization, not for all four.',
+    topics: [],
+    specializations: true,
+    branches: [
+      {
+        cls: 'linux',
+        title: '🐧 Linux Native',
+        checks: ['Study ptmalloc2 heap internals', 'Write a stack overflow PoC', 'Bypass stack canary', 'Bypass ASLR with info leak', 'Build a ROP chain (ret2libc)', 'Write exploit report'],
+        resources: [
+          { label: 'Linux Man-pages', url: 'https://man7.org/linux/man-pages/' },
+          { label: 'Linux Kernel Documentation', url: 'https://www.kernel.org/doc/html/latest/' },
+          { label: 'OST2 Arch2001: OS Internals', url: 'https://ost2.fyi/Arch2001' },
+          { label: 'OST2 Vulns1002', url: 'https://ost2.fyi/Vulns1002' },
+          { label: 'GDB Documentation', url: 'https://sourceware.org/gdb/documentation/' },
+          { label: 'AFL++ Docs', url: 'https://aflplus.plus/docs/' },
+          { label: 'ROP Emporium: ROP chain exercises (free)', url: 'https://ropemporium.com/' },
+          { label: 'pwntools Docs: ROP & exploit helpers', url: 'https://docs.pwntools.com/en/stable/rop/rop.html' },
+          { label: 'glibc Malloc Internals (ptmalloc2 reference)', url: 'https://sourceware.org/glibc/wiki/MallocInternals' },
+        ]
+      },
+      {
+        cls: 'win',
+        title: '🪟 Windows Native',
+        checks: ['Study WinAPI internals', 'Analyze PE imports/exports', 'Use WinDbg for crash triage', 'Study heap spray techniques', 'Analyze a real CVE patch diff', 'Write a vulnerability report'],
+        resources: [
+          { label: 'Microsoft PE Format', url: 'https://learn.microsoft.com/en-us/windows/win32/debug/pe-format' },
+          { label: 'WinDbg Documentation', url: 'https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/' },
+          { label: 'Microsoft Docs: Windows Heap Manager internals', url: 'https://learn.microsoft.com/en-us/windows/win32/memory/heap-functions' },
+          { label: 'OST2 Vulns1002', url: 'https://ost2.fyi/Vulns1002' },
+          { label: 'MITRE CWE', url: 'https://cwe.mitre.org/' },
+        ]
+      },
+      {
+        cls: 'browser',
+        title: '🌐 Browser / JS Engine',
+        checks: ['Set up Chromium build environment', 'Read V8 internals documentation', 'Analyze a browser CVE diff', 'Write a libFuzzer harness for V8', 'Understand JIT compiler basics', 'Study sandbox escape techniques'],
+        resources: [
+          { label: 'V8 Engine Documentation', url: 'https://v8.dev/docs' },
+          { label: 'Chromium Security', url: 'https://www.chromium.org/Home/chromium-security/' },
+          { label: 'Chromium: Sandbox Architecture documentation', url: 'https://chromium.googlesource.com/chromium/src/+/main/docs/design/sandbox.md' },
+          { label: 'LLVM libFuzzer', url: 'https://llvm.org/docs/LibFuzzer.html' },
+          { label: 'OST2 Vulns1002', url: 'https://ost2.fyi/Vulns1002' },
+        ]
+      },
+      {
+        cls: 'kernel',
+        title: '⚡ Linux Kernel',
+        checks: ['Set up kernel debugging with QEMU+GDB', 'Write a basic kernel module', 'Study slab/slub allocator', 'Analyze a kernel CVE commit', 'Write a syzkaller fuzzing harness', 'Study privilege escalation primitives'],
+        resources: [
+          { label: 'Linux Kernel Documentation', url: 'https://www.kernel.org/doc/html/latest/' },
+          { label: 'Linux MM Documentation', url: 'https://www.kernel.org/doc/html/latest/admin-guide/mm/index.html' },
+          { label: 'syzkaller: Official Linux Setup Documentation (GitHub)', url: 'https://github.com/google/syzkaller/blob/master/docs/linux/setup.md' },
+          { label: 'QEMU: User Documentation (VM setup for kernel debugging)', url: 'https://www.qemu.org/docs/master/' },
+          { label: 'Linux Kernel: Writing a Simple Kernel Module', url: 'https://www.kernel.org/doc/html/latest/driver-api/basics.html' },
+          { label: 'OST2 Arch2001: OS Internals', url: 'https://ost2.fyi/Arch2001' },
+          { label: 'OST2 Fuzz1001: Fuzzing', url: 'https://ost2.fyi/Fuzz1001' },
+          { label: 'GDB Documentation', url: 'https://sourceware.org/gdb/documentation/' },
+        ]
+      },
+    ]
+  },
+];
 
-  /* ---------------- CONFIG ---------------- */
-  const XP_PER_QUEST = 25;
-  const XP_PER_LEVEL = 100;
-  const STORE_KEY = 'neurodeck.skilltree.v1';
+// ============================================================
+// STATE
+// ============================================================
+let layerOpen = new Array(LAYERS.length).fill(false);
+let topicsDone = {};
+let specDone = {};  // key: "li-branchIdx-checkIdx"
+let selectedSpec = 0; // which specialization branch index to track (0–3)
 
-  const RANKS = [
-    { min: 100, name: 'LEGEND // SYSTEM OWNED' },
-    { min: 91,  name: 'ZERO-DAY HUNTER' },
-    { min: 76,  name: 'EXPLOIT DEV' },
-    { min: 56,  name: 'KERNEL PILOT' },
-    { min: 36,  name: 'CODE DIVER' },
-    { min: 16,  name: 'NETRUNNER' },
-    { min: 0,   name: 'SCRIPT KIDDIE' }
-  ];
+try {
+  const saved = JSON.parse(localStorage.getItem('nc-curriculum-state-v2') || '{}');
+  if (saved.layerOpen) layerOpen = saved.layerOpen;
+  if (saved.topicsDone) topicsDone = saved.topicsDone;
+  if (saved.specDone) specDone = saved.specDone;
+  if (typeof saved.selectedSpec === 'number') selectedSpec = saved.selectedSpec;
+} catch(e) {}
 
-  /* ---------------- STATE ---------------- */
-  const questEls = Array.from(document.querySelectorAll('.quest'));
-  const moduleEls = Array.from(document.querySelectorAll('.module'));
-  const TOTAL = questEls.length;
-
-  let done = new Set();
+function saveState() {
   try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (raw) {
-      const arr = JSON.parse(raw);
-      if (Array.isArray(arr)) done = new Set(arr);
+    localStorage.setItem('nc-curriculum-state-v2', JSON.stringify({ layerOpen, topicsDone, specDone, selectedSpec }));
+  } catch(e) {}
+}
+
+// ============================================================
+// BUILD DOM
+// ============================================================
+function buildPage() {
+  const list = document.getElementById('layerList');
+  list.innerHTML = '';
+
+  LAYERS.forEach((layer, li) => {
+    const card = document.createElement('div');
+    card.className = 'layer-card' + (layerOpen[li] ? ' open' : '');
+    card.style.setProperty('--layer-color', layer.color);
+
+    const totalTopics = layer.topics.length;
+    const doneTopic = layer.topics.filter((_, ti) => topicsDone[`${li}-${ti}`]).length;
+
+    // For spec layer, count spec checks
+    let specTotal = 0, specDoneCount = 0;
+    if (layer.specializations && layer.branches) {
+      layer.branches.forEach((b, bi) => {
+        (b.checks || []).forEach((_, ci) => {
+          specTotal++;
+          if (specDone[`${li}-${bi}-${ci}`]) specDoneCount++;
+        });
+      });
     }
-  } catch (e) { /* storage unavailable — run in-memory */ }
 
-  let lastLevel = 0;
+    const allDone = totalTopics > 0
+      ? (doneTopic === totalTopics)
+      : (specTotal > 0 && specDoneCount === specTotal);
 
-  function save() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(Array.from(done))); }
-    catch (e) { /* ignore */ }
-  }
+    const metaStr = layer.specializations
+      ? `${specDoneCount}/${specTotal} MILESTONES · ${layer.hours}`
+      : `${doneTopic}/${totalTopics} TOPICS · ${layer.hours}`;
 
-  /* ---------------- HUD REFS ---------------- */
-  const levelChip = document.getElementById('levelChip');
-  const xpText    = document.getElementById('xpText');
-  const rankText  = document.getElementById('rankText');
-  const xpFill    = document.getElementById('xpFill');
-  const statDone  = document.getElementById('statDone');
-  const statXp    = document.getElementById('statXp');
-  const statPct   = document.getElementById('statPct');
-  const toastEl   = document.getElementById('toast');
+    card.innerHTML = `
+      <div class="layer-header" role="button" tabindex="0" aria-expanded="${layerOpen[li]}" data-li="${li}">
+        <div class="layer-num">${layer.num}</div>
+        <div class="layer-title-block">
+          <div class="layer-title">${layer.title}</div>
+          <div class="layer-meta">${metaStr}</div>
+        </div>
+        <div class="layer-badges">
+          <span class="badge badge-hours">${layer.hours}</span>
+          <span class="badge badge-lvl">${layer.level}</span>
+          ${allDone ? '<span class="badge badge-done">✓ DONE</span>' : ''}
+        </div>
+        <div class="layer-toggle">▼</div>
+      </div>
+      <div class="layer-body">
+        ${layer.warning ? `<div class="course-warning">${layer.warning}</div>` : ''}
+        <div class="obj-line">${layer.obj}</div>
+        ${layer.specializations ? buildSpecializations(layer, li) : buildTopics(layer, li)}
+      </div>
+    `;
 
-  const pad2 = n => String(n).padStart(2, '0');
-
-  function rankFor(pct) {
-    for (const r of RANKS) if (pct >= r.min) return r.name;
-    return RANKS[RANKS.length - 1].name;
-  }
-
-  /* ---------------- RENDER ---------------- */
-  function render(showLevelUp) {
-    let completed = 0;
-
-    questEls.forEach(q => {
-      const on = done.has(q.dataset.id);
-      q.classList.toggle('done', on);
-      if (on) completed++;
+    card.querySelector('.layer-header').addEventListener('click', () => toggleLayer(li));
+    card.querySelector('.layer-header').addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleLayer(li); }
     });
 
-    moduleEls.forEach(m => {
-      const qs = m.querySelectorAll('.quest');
-      const c  = m.querySelectorAll('.quest.done').length;
-      const chip = m.querySelector('.mod-prog');
-      chip.textContent = c + '/' + qs.length;
-      chip.classList.toggle('done', c === qs.length && qs.length > 0);
-      m.classList.toggle('complete', c === qs.length && qs.length > 0);
+    card.querySelectorAll('.topic-check').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const key = btn.dataset.key;
+        topicsDone[key] = !topicsDone[key];
+        saveState();
+        buildPage();
+        updateProgress();
+      });
     });
 
-    const xp    = completed * XP_PER_QUEST;
-    const level = Math.floor(xp / XP_PER_LEVEL) + 1;
-    const inLvl = xp % XP_PER_LEVEL;
-    const pct   = Math.round((completed / TOTAL) * 100);
-
-    levelChip.textContent = 'LVL ' + pad2(level);
-    xpText.textContent    = inLvl + ' / ' + XP_PER_LEVEL + ' XP';
-    rankText.textContent  = rankFor(pct);
-    xpFill.style.width    = (inLvl / XP_PER_LEVEL * 100) + '%';
-
-    statDone.textContent = completed + '/' + TOTAL;
-    statXp.textContent   = xp;
-    statPct.textContent  = pct + '%';
-
-    if (showLevelUp && level > lastLevel) {
-      toastEl.textContent = 'LEVEL UP // LVL ' + pad2(level);
-      toastEl.classList.remove('show');
-      void toastEl.offsetWidth;
-      toastEl.classList.add('show');
-    }
-    lastLevel = level;
-  }
-
-  /* ---------------- FLOATING +XP ---------------- */
-  function floatXp(x, y, label) {
-    const el = document.createElement('div');
-    el.className = 'float-xp';
-    el.textContent = label;
-    el.style.left = x + 'px';
-    el.style.top  = y + 'px';
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 1000);
-  }
-
-  /* ---------------- INTERACTIONS ---------------- */
-  questEls.forEach(q => {
-    q.addEventListener('click', ev => {
-      if (ev.target.closest('a')) return;           // let links through
-      const id = q.dataset.id;
-      const wasDone = done.has(id);
-
-      if (wasDone) {
-        done.delete(id);
-      } else {
-        done.add(id);
-        const r = q.getBoundingClientRect();
-        floatXp(r.left + r.width / 2, r.top + r.height / 2, '+' + XP_PER_QUEST + ' XP');
-      }
-      save();
-      render(true);
+    card.querySelectorAll('.spec-check-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const key = btn.dataset.key;
+        specDone[key] = !specDone[key];
+        saveState();
+        buildPage();
+        updateProgress();
+      });
     });
+
+    list.appendChild(card);
   });
 
-  /* ---------------- RESET ---------------- */
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    if (!done.size) return;
-    if (confirm('WIPE ALL PROGRESS? This purges your skill tree.')) {
-      done.clear();
-      save();
-      render(false);
+  updateProgress();
+}
+
+function buildTopics(layer, li) {
+  return `<div class="topics">${layer.topics.map((t, ti) => {
+    const key = `${li}-${ti}`;
+    const done = !!topicsDone[key];
+    return `
+      <div class="topic">
+        <button class="topic-check ${done ? 'checked' : ''}" data-key="${key}" title="Mark complete">✓</button>
+        <div class="topic-name">${t.name}</div>
+        <div class="topic-desc">${t.desc}</div>
+        <div class="resources">
+          ${t.resources.map(r => `<a class="res-link" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.label}</a>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function buildSpecializations(layer, li) {
+  return `<div class="spec-grid">${layer.branches.map((b, bi) => `
+    <div class="spec-branch">
+      <div class="spec-branch-title ${b.cls}">${b.title}</div>
+      <div class="resources" style="flex-direction:column; gap:0.3rem; margin-bottom: 0.75rem;">
+        ${b.resources.map(r => `<a class="res-link" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.label}</a>`).join('')}
+      </div>
+      ${b.checks && b.checks.length ? `
+        <div style="font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; color:var(--fg-dim); margin-bottom:0.4rem;">MILESTONES</div>
+        <div class="spec-checklist">
+          ${b.checks.map((chk, ci) => {
+            const key = `${li}-${bi}-${ci}`;
+            const done = !!specDone[key];
+            return `
+              <div class="spec-check-item">
+                <button class="spec-check-btn ${done ? 'checked' : ''}" data-key="${key}" title="Mark complete">✓</button>
+                <span style="${done ? 'text-decoration:line-through;opacity:0.5;' : ''}">${chk}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `).join('')}</div>`;
+}
+
+function toggleLayer(li) {
+  layerOpen[li] = !layerOpen[li];
+  saveState();
+  buildPage();
+}
+
+function buildSpecSelector() {
+  const specLayerIdx = LAYERS.findIndex(l => l.specializations);
+  if (specLayerIdx === -1) return;
+  const branches = LAYERS[specLayerIdx].branches;
+  const container = document.getElementById('specBtns');
+  if (!container) return;
+  container.innerHTML = '';
+  branches.forEach((b, bi) => {
+    const btn = document.createElement('button');
+    const isSelected = bi === selectedSpec;
+    btn.style.cssText = `
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid ${isSelected ? b.cls === 'linux' ? 'var(--green)' : b.cls === 'win' ? 'var(--cyan)' : b.cls === 'browser' ? 'var(--yellow)' : 'var(--magenta)' : 'rgba(255,255,255,0.15)'};
+      background: ${isSelected ? b.cls === 'linux' ? 'var(--green-dim)' : b.cls === 'win' ? 'var(--cyan-dim)' : b.cls === 'browser' ? 'var(--yellow-dim)' : 'var(--magenta-dim)' : 'transparent'};
+      color: ${isSelected ? b.cls === 'linux' ? 'var(--green)' : b.cls === 'win' ? 'var(--cyan)' : b.cls === 'browser' ? 'var(--yellow)' : 'var(--magenta)' : 'var(--fg-dim)'};
+      cursor: pointer;
+      transition: all 0.2s;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    `;
+    btn.textContent = b.title;
+    btn.addEventListener('click', () => {
+      selectedSpec = bi;
+      saveState();
+      buildSpecSelector();
+      updateProgress();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function updateProgress() {
+  let total = 0, done = 0;
+  const specLayerIdx = LAYERS.findIndex(l => l.specializations);
+
+  LAYERS.forEach((layer, li) => {
+    if (layer.specializations && layer.branches) {
+      // Only count the selected branch
+      const b = layer.branches[selectedSpec];
+      if (b) {
+        (b.checks || []).forEach((_, ci) => {
+          total++;
+          if (specDone[`${li}-${selectedSpec}-${ci}`]) done++;
+        });
+      }
+    } else {
+      layer.topics.forEach((_, ti) => {
+        total++;
+        if (topicsDone[`${li}-${ti}`]) done++;
+      });
     }
   });
 
-  /* ---------------- BOOT SEQUENCE ---------------- */
-  const bootEl = document.getElementById('boot');
-  const logEl  = document.getElementById('bootlog');
-  const lines = [
-    '> NEUROLINK v2.077 ................. OK',
-    '> LOADING CYBERDECK CORE ........... OK',
-    '> MOUNTING /dev/knowledge .......... OK',
-    '> INJECTING SKILL TREE [48 NODES] .. OK',
-    '> WELCOME BACK, NETRUNNER.'
-  ];
+  const pct = total > 0 ? (done / total) * 100 : 0;
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progText').textContent = `${done} / ${total}`;
 
-  let bootDone = false;
-  function endBoot() {
-    if (bootDone) return;
-    bootDone = true;
-    bootEl.classList.add('gone');
-  }
+  // layer ticks
+  const layersDone = LAYERS.map((layer, li) => {
+    if (layer.specializations && layer.branches) {
+      const b = layer.branches[selectedSpec];
+      if (!b || !b.checks || b.checks.length === 0) return false;
+      return b.checks.every((_, ci) => specDone[`${li}-${selectedSpec}-${ci}`]);
+    }
+    const t = layer.topics.length;
+    if (t === 0) return false;
+    return layer.topics.every((_, ti) => topicsDone[`${li}-${ti}`]);
+  });
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const container = document.getElementById('progLayers');
+  container.innerHTML = '';
+  LAYERS.forEach((layer, li) => {
+    const tick = document.createElement('div');
+    tick.className = 'prog-layer-tick' + (layersDone[li] ? ' done' : '');
+    tick.title = `Layer ${layer.num}: ${layer.title}`;
+    tick.addEventListener('click', () => {
+      layerOpen[li] = true;
+      saveState();
+      buildPage();
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.layer-card');
+        if (cards[li]) cards[li].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    });
+    container.appendChild(tick);
+  });
+}
 
-  if (reduceMotion) {
-    endBoot();
-  } else {
-    let i = 0;
-    const tick = setInterval(() => {
-      if (i >= lines.length) {
-        clearInterval(tick);
-        setTimeout(endBoot, 380);
-        return;
-      }
-      logEl.textContent += lines[i] + '\n';
-      i++;
-    }, 170);
-    bootEl.addEventListener('click', () => { clearInterval(tick); endBoot(); });
-  }
-
-  /* ---------------- INIT ---------------- */
-  render(false);
-})();
+buildPage();
+buildSpecSelector();
 </script>
-</body>
-</html>
+
+</body></html>
